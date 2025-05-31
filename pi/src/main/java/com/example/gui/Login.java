@@ -16,6 +16,7 @@ public class Login extends javax.swing.JFrame {
 
     public Login() {
         initComponents();
+        usuarios = Usuario.carregarUsuarios();
         loginUsuario = new LoginUsuario(usuarios);
     }
 
@@ -144,28 +145,16 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>                        
 
     // Evento de clique do botão "LOGAR"
-    private void jButtonLogarActionPerformed(java.awt.event.ActionEvent evt) { 
-                new Espetaculos().setVisible(true);                                           
+    private void jButtonLogarActionPerformed(java.awt.event.ActionEvent evt) {                                         
+      
         loginUser();
-        limpar();
-        
+
     }                                           
 
     // Evento de clique do botão "Criar novo cadastro"
     private void jBNovoCadastroActionPerformed(java.awt.event.ActionEvent evt) {                                              
         new CadastroUsuario().setVisible(true);
     }                                             
-
-    /**
-     * Método principal para execução da aplicação.
-     */
-    public static void main(String args[]) {
-        FlatLightLaf.setup();
-
-        java.awt.EventQueue.invokeLater(() -> {
-            new Login().setVisible(true);
-        });
-    }
 
     // Variáveis de componentes da GUI
     private javax.swing.JFormattedTextField JFtxtCpf;
@@ -185,6 +174,7 @@ public class Login extends javax.swing.JFrame {
         if (loginUsuario.RealizarLogin(cpfSemMascara)) {
             JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
             new Espetaculos().setVisible(true); // Abre a tela de espetáculos após login
+            limpar();
             this.dispose(); // Fecha a tela atual de login
         } else {
             JOptionPane.showMessageDialog(this, "CPF não encontrado. Login falhou.");
@@ -197,4 +187,13 @@ public class Login extends javax.swing.JFrame {
     public void limpar() {
         JFtxtCpf.setText("");
     }
+
+    public static void main(String args[]) {
+        FlatLightLaf.setup();
+
+        java.awt.EventQueue.invokeLater(() -> {
+            new Login().setVisible(true);
+        });
+    }
+
 }

@@ -16,6 +16,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import com.example.model.Usuario;
 import com.formdev.flatlaf.FlatLightLaf;
 
 public class CadastroUsuario extends JFrame {
@@ -100,21 +101,30 @@ public class CadastroUsuario extends JFrame {
         add(mainPanel);
     }
 
-    private void cadastrarDados() {
-        String nome = txtNome.getText();
-        String cpf = txtCpf.getText();
-        String nascimento = txtDataNascimento.getText();
-        String telefone = txtTelefone.getText();
-        String logradouro = txtLogradouro.getText();
-        String bairro = txtBairro.getText();
-        String cep = txtCep.getText();
-        String cidade = txtCidade.getText();
-        String uf = txtUf.getText();
-        boolean fidelidade = chkFidelidade.isSelected();
+private void cadastrarDados() {
+    try {
+        Usuario pessoa = new Usuario(
+            txtNome.getText(),
+            txtCpf.getText(),
+            txtDataNascimento.getText(),
+            txtTelefone.getText(),
+            txtLogradouro.getText(),
+            txtBairro.getText(),
+            txtCep.getText(),
+            txtCidade.getText(),
+            txtUf.getText()
+        );
 
-        JOptionPane.showMessageDialog(this, "Usuário cadastrado:\n" + nome);
+        pessoa.cadastraUsuario(pessoa); 
+        JOptionPane.showMessageDialog(this, pessoa.salvar());
+
         limparCampos();
+
+    } catch (IllegalArgumentException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
     }
+}
+
 
     private void limparCampos() {
         txtNome.setText("");
