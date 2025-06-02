@@ -171,10 +171,14 @@ public class Login extends javax.swing.JFrame {
     public void loginUser() {
         String cpfSemMascara = JFtxtCpf.getText().replaceAll("[^\\d]", ""); // Remove máscara do CPF
 
+        List<Usuario> listaUsuarios = Usuario.carregarUsuarios();
+        loginUsuario = new LoginUsuario(listaUsuarios);
+        
         if (loginUsuario.RealizarLogin(cpfSemMascara)) {
             JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
             new Espetaculos().setVisible(true); // Abre a tela de espetáculos após login
             limpar();
+          
             this.dispose(); // Fecha a tela atual de login
         } else {
             JOptionPane.showMessageDialog(this, "CPF não encontrado. Login falhou.");

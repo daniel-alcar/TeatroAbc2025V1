@@ -103,6 +103,7 @@ public class CadastroUsuario extends JFrame {
 
 private void cadastrarDados() {
     try {
+        Usuario.usuarios = Usuario.carregarUsuarios();
         Usuario pessoa = new Usuario(
             txtNome.getText(),
             txtCpf.getText(),
@@ -117,7 +118,9 @@ private void cadastrarDados() {
 
         pessoa.cadastraUsuario(pessoa); 
         JOptionPane.showMessageDialog(this, pessoa.salvar());
-
+        Usuario.usuarios = Usuario.carregarUsuarios();
+        new Login().setVisible(true);
+        this.dispose();
         limparCampos();
 
     } catch (IllegalArgumentException ex) {

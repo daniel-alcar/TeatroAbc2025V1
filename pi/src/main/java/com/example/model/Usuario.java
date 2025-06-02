@@ -111,24 +111,29 @@ public class Usuario {
         this.uf = uf;
     }
 
-    public String salvar() {
+public String salvar() {
 
-        try {
-            FileWriter fw = new FileWriter("usuarios.txt", true);
-            PrintWriter pw = new PrintWriter(fw);
-            pw.print(nome + ";" + cpf + ";" + dataNascimento + ";" + telefone + ";" + logradouro + ";" + bairro + ";" + cep + ";" + cidade + ";" + uf +"\n");
+    try {
+        FileWriter fw = new FileWriter("usuarios.txt", true);
+        PrintWriter pw = new PrintWriter(fw);
 
-            pw.flush();
-            pw.close();
-            fw.close();
+        String cpfSemMascara = cpf.replaceAll("[^\\d]", "");
 
-        } catch (IOException ex) {
-            Logger.getLogger(Usuario.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        pw.print(nome + ";" + cpfSemMascara + ";" + dataNascimento + ";" + telefone + ";" + logradouro + ";" + bairro + ";" + cep + ";" + cidade + ";" + uf + "\n");
 
-        return "Cadastrado com sucesso";
+        pw.flush();
+        pw.close();
+        fw.close();
 
+        
+
+    } catch (IOException ex) {
+        Logger.getLogger(Usuario.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+    return "Cadastrado com sucesso";
+}
+
 
     public boolean validarCPF(String cpf) {
 
@@ -208,7 +213,7 @@ public class Usuario {
     public static List<Usuario> carregarUsuarios() {
     List<Usuario> lista = new ArrayList<>();
 
-    try (BufferedReader br = new BufferedReader(new FileReader("usuarios.txt"))) {
+    try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\danie\\OneDrive\\Documentos\\TeatroAbc2025V1\\usuarios.txt"))) {
         String linha;
         while ((linha = br.readLine()) != null) {
             String[] dados = linha.split(";");

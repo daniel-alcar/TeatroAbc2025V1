@@ -1,46 +1,40 @@
 package com.example.gui;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.example.model.Estatisticas;
 import com.example.model.Sessao;
-import com.example.model.VendaIngresso;
 import com.formdev.flatlaf.FlatLightLaf;
 
 public class Balcao_Nobre extends JFrame {
 
     private Estatisticas estatisticas = new Estatisticas();
-    private Sessao sessao;
+    private Sessao sessao; // Sessão passada para esta tela
 
     private JTextField jTxtNumeroPoltronaBalcaoNobre;
     private JButton jBComprarIngressoBalcaoNobre;
 
     public Balcao_Nobre(Sessao sessao) {
-        this.sessao = sessao;
+        this.sessao = sessao; // Sessão definida via construtor
         initComponents();
     }
 
     public Balcao_Nobre() {
-        initComponents();
+        initComponents(); // construtor padrão (sem sessão)
     }
 
     private void initComponents() {
-        // Configura o Frame
         setTitle("Balcão Nobre");
         setSize(600, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null); // centraliza
+        setLocationRelativeTo(null);
 
-        // Painel principal
-        JPanel jPanel1 = new JPanel();
+        JPanel jPanel1 = new JPanel(new BorderLayout());
         jPanel1.setBackground(Color.WHITE);
-        jPanel1.setLayout(new BorderLayout());
 
-        // Painel superior (cabeçalho)
         JPanel jPanel2 = new JPanel();
         jPanel2.setBackground(new Color(51, 51, 51));
         jPanel2.setLayout(new BoxLayout(jPanel2, BoxLayout.Y_AXIS));
@@ -61,7 +55,6 @@ public class Balcao_Nobre extends JFrame {
         jPanel2.add(jLabel2);
         jPanel2.add(Box.createVerticalStrut(20));
 
-        // Painel central
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(Color.WHITE);
@@ -96,7 +89,6 @@ public class Balcao_Nobre extends JFrame {
         centerPanel.add(jBComprarIngressoBalcaoNobre);
         centerPanel.add(Box.createVerticalStrut(20));
 
-        // Adiciona os painéis ao frame
         jPanel1.add(jPanel2, BorderLayout.NORTH);
         jPanel1.add(centerPanel, BorderLayout.CENTER);
 
@@ -104,22 +96,31 @@ public class Balcao_Nobre extends JFrame {
     }
 
     private void comprarIngressoAction(ActionEvent evt) {
-        VendaIngresso venda = new VendaIngresso();
-
         try {
             int numeroPoltrona = Integer.parseInt(jTxtNumeroPoltronaBalcaoNobre.getText());
 
-            if (sessao != null && sessao.reservarPoltrona("Balcão Nobre", numeroPoltrona)) {
-                JOptionPane.showMessageDialog(this, "Poltrona disponível. Ingresso comprado!");
-                // Aqui pode abrir a tela de imprimir ingresso, se quiser.
-            } else {
-                JOptionPane.showMessageDialog(this, "Poltrona já reservada.");
+            if (numeroPoltrona < 1 || numeroPoltrona > 50) {
+                JOptionPane.showMessageDialog(this, "Número de poltrona inválido. Digite entre 1 e 50.");
+                return;
             }
 
-            estatisticas.exibirEstatisticas();
+            if (sessao == null) {
+                JOptionPane.showMessageDialog(this, "Erro interno: sessão não definida.");
+                return;
+            }
+
+            boolean reservada = sessao.reservarPoltrona("Balcão Nobre", numeroPoltrona);
+
+            if (reservada) {
+                JOptionPane.showMessageDialog(this, "Poltrona disponível. Ingresso comprado com sucesso!");
+                estatisticas.exibirEstatisticas(); // Se quiser exibir após compra
+                // Aqui você pode abrir a tela de "Ingresso Gerado", imprimir, etc.
+            } else {
+                JOptionPane.showMessageDialog(this, "Essa poltrona já está reservada.");
+            }
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Erro: O número da poltrona deve ser um valor inteiro.");
+            JOptionPane.showMessageDialog(this, "Erro: O número da poltrona deve ser um número inteiro.");
         }
     }
 
@@ -127,7 +128,7 @@ public class Balcao_Nobre extends JFrame {
         FlatLightLaf.setup();
 
         SwingUtilities.invokeLater(() -> {
-            new Balcao_Nobre().setVisible(true);
+        new Balcao_Nobre().setVisible(true);
         });
     }
 }

@@ -9,13 +9,15 @@ public class LoginUsuario {
     public LoginUsuario(List<Usuario> usuarios) {
         this.usuarios = usuarios;
     }
-
+    
     public boolean RealizarLogin(String cpf) {
+        String cpfSemMascara = cpf.replaceAll("[^\\d]", "");
         for (Usuario usuario : usuarios) {
-            if (usuario.getCpf().equals(cpf)) {
+            if (usuario.getCpf().equals(cpfSemMascara)) {
                 return true;
             }
         }
         return false;
     }
+
 }
