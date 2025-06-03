@@ -41,7 +41,7 @@ public class TelaPrincipal extends JFrame {
     jButtonUsuario.setIconTextGap(15);
     URL iconUser = getClass().getResource("/Icons/user.png");
     if (iconUser != null) jButtonUsuario.setIcon(new ImageIcon(iconUser));
-    jButtonUsuario.setBounds(10, 120, 250, 100);
+    jButtonUsuario.setBounds(10, 100, 250, 80);
     jButtonUsuario.addActionListener(evt -> new Login().setVisible(true));
     panelMenu.add(jButtonUsuario);
 
@@ -55,7 +55,7 @@ public class TelaPrincipal extends JFrame {
     jButtonEspetaculo.setIconTextGap(14);
     URL iconEspetaculo = getClass().getResource("/Icons/espetaculo.png");
     if (iconEspetaculo != null) jButtonEspetaculo.setIcon(new ImageIcon(iconEspetaculo));
-    jButtonEspetaculo.setBounds(10, 330, 250, 110);
+    jButtonEspetaculo.setBounds(10, 200, 250, 80);
     jButtonEspetaculo.addActionListener(evt -> new Login().setVisible(true));
     panelMenu.add(jButtonEspetaculo);
 
@@ -69,9 +69,24 @@ public class TelaPrincipal extends JFrame {
     jButtonRelatorios.setIconTextGap(14);
     URL iconRelatorio = getClass().getResource("/Icons/relatorio.png");
     if (iconRelatorio != null) jButtonRelatorios.setIcon(new ImageIcon(iconRelatorio));
-    jButtonRelatorios.setBounds(10, 560, 250, 110);
+    jButtonRelatorios.setBounds(10, 300, 250, 80);
     jButtonRelatorios.addActionListener(evt -> new RelatorioUsuario().setVisible(true));
     panelMenu.add(jButtonRelatorios);
+
+    // Botão Buscar Ingresso
+    JButton jButtonBuscarIngresso = new JButton("Buscar Ingresso");
+    jButtonBuscarIngresso.setFont(new Font("Segoe UI", Font.BOLD, 24));
+    jButtonBuscarIngresso.setForeground(Color.WHITE);
+    jButtonBuscarIngresso.setBackground(new Color(255, 102, 0));
+    jButtonBuscarIngresso.setBorder(null);
+    jButtonBuscarIngresso.setHorizontalAlignment(SwingConstants.LEFT);
+    jButtonBuscarIngresso.setIconTextGap(14);
+    URL iconBuscar = getClass().getResource("/Icons/buscar.png");
+    if (iconBuscar != null) jButtonBuscarIngresso.setIcon(new ImageIcon(iconBuscar));
+    jButtonBuscarIngresso.setBounds(10, 400, 250, 80);
+    jButtonBuscarIngresso.addActionListener(evt -> new ConsultaIngressos().setVisible(true));
+    panelMenu.add(jButtonBuscarIngresso);
+
 
     // Painel de imagem
     JLabel backgroundLabel = new JLabel();

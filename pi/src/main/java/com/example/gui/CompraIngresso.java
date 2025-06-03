@@ -1,15 +1,21 @@
 package com.example.gui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -17,138 +23,261 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import com.example.model.Area;
 import com.example.model.Sessao;
 
 public class CompraIngresso extends JFrame {
 
-    private Sessao sessao;
-    private Area area;
+    private JComboBox<String> comboSessao;
+    private JComboBox<String> comboArea;
+    private JComboBox<Integer> comboPoltrona;
+    private JButton btnFinalizar;
 
-    private JPanel contentPanel;
-    private JButton jButtonA, jButtonB, jButtonCamarote, jButtonFrisa, jButton1;
-    private JComboBox<String> jComboBox1, jComboBox2;
+    // Mapa: Sessao -> Area -> Poltrona -> CPF comprador (null se disponível)
+    private Map<String, Map<String, Map<Integer, String>>> reservas;
 
-    public CompraIngresso(Sessao sessao) {
-        this.sessao = sessao;
-        initUI();
+    private List<Sessao> sessoes;
+
+    private static final String ARQUIVO_RESERVAS = "reservas.txt";
+
+    public CompraIngresso(List<Sessao> sessoes) {
+        this.sessoes = sessoes;
+
+        reservas = new HashMap<>();
+
+        initComponentes();
+        inicializarReservas();
+        carregarReservasDoArquivo();
+        atualizarAreas();
+        atualizarPoltronas();
     }
 
-    private void initUI() {
+    private void initComponentes() {
         setTitle("Compra de Ingresso");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(1052, 745);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(450, 350);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        contentPanel = new JPanel();
-        contentPanel.setLayout(new BorderLayout());
-        contentPanel.setBackground(Color.DARK_GRAY);
-        add(contentPanel);
+        // Título
+        JLabel titulo = new JLabel("Compra de Ingresso");
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titulo.setBorder(new EmptyBorder(15, 0, 20, 0));
+        titulo.setForeground(Color.BLACK);
+        add(titulo, BorderLayout.NORTH);
 
-        JPanel sidePanel = createSidePanel();
-        JPanel mainPanel = createMainPanel();
+        // Painel central com GridBagLayout
+        JPanel painelCentral = new JPanel();
+        painelCentral.setBorder(new EmptyBorder(10, 30, 10, 30));
+        painelCentral.setLayout(new GridBagLayout());
+        painelCentral.setBackground(new Color(250, 245, 240)); // tom neutro claro
+        add(painelCentral, BorderLayout.CENTER);
 
-        contentPanel.add(sidePanel, BorderLayout.WEST);
-        contentPanel.add(mainPanel, BorderLayout.CENTER);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Labels e combos
+        JLabel lblSessao = new JLabel("Selecione a Sessão:");
+        lblSessao.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblSessao.setForeground(Color.BLACK);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        painelCentral.add(lblSessao, gbc);
+
+        comboSessao = new JComboBox<>();
+        comboSessao.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        painelCentral.add(comboSessao, gbc);
+
+        JLabel lblArea = new JLabel("Selecione a Área:");
+        lblArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblArea.setForeground(Color.BLACK);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        painelCentral.add(lblArea, gbc);
+
+        comboArea = new JComboBox<>();
+        comboArea.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        painelCentral.add(comboArea, gbc);
+
+        JLabel lblPoltrona = new JLabel("Selecione a Poltrona:");
+        lblPoltrona.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblPoltrona.setForeground(Color.BLACK);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        painelCentral.add(lblPoltrona, gbc);
+
+        comboPoltrona = new JComboBox<>();
+        comboPoltrona.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        painelCentral.add(comboPoltrona, gbc);
+
+        // Botão finalizar no rodapé
+        btnFinalizar = new JButton("Finalizar Compra");
+        btnFinalizar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnFinalizar.setBackground(new Color(255, 140, 0)); // laranja
+        btnFinalizar.setForeground(Color.BLACK);
+        btnFinalizar.setFocusPainted(false);
+        btnFinalizar.setPreferredSize(new Dimension(180, 40));
+        JPanel painelBotao = new JPanel();
+        painelBotao.setBorder(new EmptyBorder(10, 0, 20, 0));
+        painelBotao.add(btnFinalizar);
+        add(painelBotao, BorderLayout.SOUTH);
+
+        // Preencher comboSessao com os períodos das sessões
+        for (Sessao s : sessoes) {
+            comboSessao.addItem(s.getPeriodo());
+        }
+
+        // Quando trocar sessão, atualizar áreas e poltronas
+        comboSessao.addActionListener(e -> {
+            atualizarAreas();
+            atualizarPoltronas();
+        });
+
+        // Quando trocar área, atualizar poltronas
+        comboArea.addActionListener(e -> atualizarPoltronas());
+
+        // Botão finalizar reserva a poltrona selecionada
+        btnFinalizar.addActionListener(e -> finalizarCompra());
     }
 
-    private JPanel createSidePanel() {
-        JPanel sidePanel = new JPanel();
-        sidePanel.setPreferredSize(new Dimension(260, 0));
-        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-        sidePanel.setBackground(new Color(51, 51, 51));
+    private void inicializarReservas() {
+        // Inicializa mapa reservas: todas as poltronas marcadas como disponíveis (null)
+        for (Sessao sessao : sessoes) {
+            String periodo = sessao.getPeriodo();
+            Map<String, Map<Integer, String>> mapaAreas = new HashMap<>();
+            reservas.put(periodo, mapaAreas);
 
-        JLabel setorLabel = createLabel("Setor", 36, Color.ORANGE);
-        sidePanel.add(setorLabel);
+            for (Area area : sessao.getAreas()) {
+                Map<Integer, String> poltronas = new HashMap<>();
+                int capacidade = area.getCapacidadeMaxima();
 
-        jButtonA = createButton("Plateia A", "R$ 40,00");
-        jButtonA.addActionListener(e -> new Plateia_A().setVisible(true));
-        sidePanel.add(jButtonA);
-
-        jButtonB = createButton("Plateia B", "R$ 60,00");
-        jButtonB.addActionListener(e -> new Plateia_B().setVisible(true));
-        sidePanel.add(jButtonB);
-
-        jButtonCamarote = createButton("Camarote", "R$ 80,00");
-        jButtonCamarote.addActionListener(e -> selecaoCamarote());
-        sidePanel.add(jButtonCamarote);
-
-        jComboBox2 = new JComboBox<>(new String[]{"Camarote 01", "Camarote 02", "Camarote 03", "Camarote 04", "Camarote 05"});
-        sidePanel.add(jComboBox2);
-
-        jButtonFrisa = createButton("Frisa", "R$ 120,00");
-        jButtonFrisa.addActionListener(e -> selecaoFrisa());
-        sidePanel.add(jButtonFrisa);
-
-        jComboBox1 = new JComboBox<>(new String[]{"Frisa 01", "Frisa 02", "Frisa 03", "Frisa 04", "Frisa 05", "Frisa 06"});
-        sidePanel.add(jComboBox1);
-
-        jButton1 = createButton("Balcão Nobre", "R$ 250,00");
-        jButton1.addActionListener(e -> new Balcao_Nobre().setVisible(true));
-        sidePanel.add(jButton1);
-
-        return sidePanel;
+                for (int i = 1; i <= capacidade; i++) {
+                    poltronas.put(i, null);
+                }
+                mapaAreas.put(area.getTitulo(), poltronas);
+            }
+        }
     }
 
-    private JPanel createMainPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.setBackground(Color.WHITE);
+    private void carregarReservasDoArquivo() {
+        try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_RESERVAS))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                // Formato: sessao;area;poltrona;cpf
+                String[] partes = linha.split(";");
+                if (partes.length == 4) {
+                    String sessao = partes[0];
+                    String area = partes[1];
+                    int poltrona = Integer.parseInt(partes[2]);
+                    String cpf = partes[3];
 
-        JLabel imagemLabel = new JLabel();
-        imagemLabel.setHorizontalAlignment(JLabel.CENTER);
-        imagemLabel.setIcon(new ImageIcon(getClass().getResource("/Icons/PLATEIA.png"))); // ajuste o caminho conforme necessário
-        panel.add(imagemLabel, BorderLayout.CENTER);
-
-        return panel;
+                    Map<String, Map<Integer, String>> mapaAreas = reservas.get(sessao);
+                    if (mapaAreas != null) {
+                        Map<Integer, String> poltronas = mapaAreas.get(area);
+                        if (poltronas != null && poltronas.containsKey(poltrona)) {
+                            poltronas.put(poltrona, cpf);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Não foi possível carregar reservas do arquivo: " + e.getMessage());
+        }
     }
 
-    private JButton createButton(String text, String preco) {
-        JButton button = new JButton(text);
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        button.setForeground(Color.WHITE);
-        button.setBackground(new Color(51, 51, 51));
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
-        button.setIcon(new ImageIcon(getClass().getResource("/Icons/poltrona.png"))); // ajuste o caminho conforme necessário
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-
-        JLabel precoLabel = new JLabel(preco);
-        precoLabel.setForeground(Color.ORANGE);
-        precoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        JPanel wrapper = new JPanel();
-        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
-        wrapper.setBackground(new Color(51, 51, 51));
-        wrapper.add(button);
-        wrapper.add(precoLabel);
-
-        return button;
+    private void salvarReservaNoArquivo(String sessao, String area, int poltrona, String cpf) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("reservas.txt", true))) {
+            bw.write(sessao + ";" + area + ";" + poltrona + ";" + cpf);
+            bw.newLine();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao salvar reserva no arquivo.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private JLabel createLabel(String text, int fontSize, Color color) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.BOLD, fontSize));
-        label.setForeground(color);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        return label;
+    private void atualizarAreas() {
+        comboArea.removeAllItems();
+        String sessaoSelecionada = (String) comboSessao.getSelectedItem();
+
+        if (sessaoSelecionada == null) return;
+
+        Map<String, Map<Integer, String>> mapaAreas = reservas.get(sessaoSelecionada);
+        if (mapaAreas == null) return;
+
+        for (String area : mapaAreas.keySet()) {
+            comboArea.addItem(area);
+        }
     }
 
-    private void selecaoFrisa() {
-        String selecao = (String) jComboBox1.getSelectedItem();
-        JOptionPane.showMessageDialog(this, "Selecionado: " + selecao);
+    private void atualizarPoltronas() {
+        comboPoltrona.removeAllItems();
+
+        String sessao = (String) comboSessao.getSelectedItem();
+        String area = (String) comboArea.getSelectedItem();
+
+        if (sessao == null || area == null) return;
+
+        Map<String, Map<Integer, String>> mapaSessao = reservas.get(sessao);
+        if (mapaSessao == null) return;
+
+        Map<Integer, String> poltronas = mapaSessao.get(area);
+        if (poltronas == null) return;
+
+        boolean temDisponivel = false;
+        for (Map.Entry<Integer, String> entry : poltronas.entrySet()) {
+            if (entry.getValue() == null) { // poltrona não reservada
+                comboPoltrona.addItem(entry.getKey());
+                temDisponivel = true;
+            }
+        }
+
+        if (!temDisponivel) {
+            comboPoltrona.addItem(-1); // indica sem poltronas disponíveis
+        }
     }
 
-    private void selecaoCamarote() {
-        String selecao = (String) jComboBox2.getSelectedItem();
-        JOptionPane.showMessageDialog(this, "Selecionado: " + selecao);
+    private void finalizarCompra() {
+        String sessao = (String) comboSessao.getSelectedItem();
+        String area = (String) comboArea.getSelectedItem();
+        Integer poltrona = (Integer) comboPoltrona.getSelectedItem();
+
+        if (sessao == null || area == null || poltrona == null || poltrona == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione uma poltrona válida!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Map<Integer, String> poltronas = reservas.get(sessao).get(area);
+
+        if (poltronas.get(poltrona) != null) {
+            JOptionPane.showMessageDialog(this, "Poltrona já reservada!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String cpf = JOptionPane.showInputDialog(this, "Digite seu CPF para confirmar a reserva:");
+
+        if (cpf == null || cpf.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "CPF inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        poltronas.put(poltrona, cpf.trim());
+        salvarReservaNoArquivo(sessao, area, poltrona, cpf.trim());
+
+        JOptionPane.showMessageDialog(this,
+            "Compra finalizada com sucesso!\nSessão: " + sessao + "\nÁrea: " + area + "\nPoltrona: " + poltrona + "\nCPF: " + cpf);
+
+        // Fecha esta janela
+        this.dispose();
+
+        // Abre a TelaPrincipal
+        TelaPrincipal telaPrincipal = new TelaPrincipal();
+        telaPrincipal.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new CompraIngresso(null).setVisible(true));
-    }
 }

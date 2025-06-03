@@ -1,6 +1,5 @@
 package com.example.gui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -19,8 +18,7 @@ import com.example.model.Sessao;
 
 public class Espetaculos extends JFrame {
 
-    public Sessao sessao;
-    public List<Area> areas;
+    private List<Area> areas;
 
     private JButton btnPatrulha, btnAlladin, btnCisne;
 
@@ -62,7 +60,7 @@ public class Espetaculos extends JFrame {
         btnAlladin = new JButton("Alladin");
         btnCisne = new JButton("Cisne Negro");
 
-        // Se desejar usar ícones, substitua os caminhos abaixo
+        // Ícones (opcional)
         try {
             btnPatrulha.setIcon(new ImageIcon(getClass().getResource("/Icons/ESPETACULO_PATRULHA.png")));
             btnAlladin.setIcon(new ImageIcon(getClass().getResource("/Icons/Alladin.png")));
@@ -87,8 +85,9 @@ public class Espetaculos extends JFrame {
     }
 
     private void abrirSessao(String horario, String nomePeca) {
-        this.sessao = new Sessao(horario, nomePeca, areas);
-        new CompraIngresso(sessao).setVisible(true);
+        Sessao novaSessao = new Sessao(horario, nomePeca, areas);
+        CompraIngresso compraUI = new CompraIngresso(List.of(novaSessao));
+        compraUI.setVisible(true);
         dispose();
     }
 

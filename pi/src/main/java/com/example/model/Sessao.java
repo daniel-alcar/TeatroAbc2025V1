@@ -11,11 +11,11 @@ public class Sessao {
     private String nomeArea;
     private Area area;
 
-    public Sessao(String periodo, String peca, List<Area> area) {
+    public Sessao(String periodo, String peca, List<Area> areas) {
       
         this.periodo = periodo;
         this.peca = peca;
-        this.areas = area;
+        this.areas = areas;
     }
 
     public int coletaQtdPoltronasReservadas() {       
@@ -91,6 +91,14 @@ public class Sessao {
 
     public Area getArea() {
         return this.area;   
+    }
+
+    public String getPeriodo() {
+    return periodo;
+    }
+
+    public List<Area> getAreas() {
+        return areas;
     }
 
 

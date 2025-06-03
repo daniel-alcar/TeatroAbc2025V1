@@ -213,7 +213,7 @@ public String salvar() {
     public static List<Usuario> carregarUsuarios() {
     List<Usuario> lista = new ArrayList<>();
 
-    try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\danie\\OneDrive\\Documentos\\TeatroAbc2025V1\\usuarios.txt"))) {
+    try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\danie\\OneDrive\\Documentos\\ProjetoPi2025\\TeatroAbc2025V1\\usuarios.txt"))) {
         String linha;
         while ((linha = br.readLine()) != null) {
             String[] dados = linha.split(";");
