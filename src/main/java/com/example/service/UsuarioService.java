@@ -1,20 +1,29 @@
 package com.example.service;
 
+import java.sql.Connection;
 import java.util.List;
 
 import com.example.dao.IUsuarioDAO;
+import com.example.dao.UsuarioDAOBanco;
 import com.example.model.LoginUsuario;
 import com.example.model.Usuario;
+import com.example.util.ConexaoBanco;
 
 public class UsuarioService {
 
     private IUsuarioDAO usuarioDAO;
 
+    public UsuarioService() throws Exception {
+        Connection conn = ConexaoBanco.getConnection();
+        this.usuarioDAO = new UsuarioDAOBanco(conn);
+    }
+
+    // Para testes ou flexibilidade, pode manter também este construtor opcional:
     public UsuarioService(IUsuarioDAO usuarioDAO) {
         this.usuarioDAO = usuarioDAO;
     }
 
-    public void cadastrarUsuario(Usuario novoUsuario) {
+    public void cadastrarUsuario(Usuario novoUsuario) throws Exception {
         String cpf = novoUsuario.getCpf();
 
         if (!validarCPF(cpf)) {
@@ -64,4 +73,9 @@ public class UsuarioService {
         LoginUsuario loginUsuario = new LoginUsuario(usuarios);
         return loginUsuario.realizarLogin(cpf);
     }
+
+    public Usuario buscarPorCpf(String cpf) throws Exception {
+        return usuarioDAO.buscarPorCPF(cpf);
+    }
+
 }

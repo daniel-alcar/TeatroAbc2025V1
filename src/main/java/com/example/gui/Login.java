@@ -1,24 +1,30 @@
 package com.example.gui;
 
+import java.sql.Connection;
+
 import javax.swing.JOptionPane;
 
 import com.example.dao.IUsuarioDAO;
 import com.example.dao.UsuarioDAOBanco;
-import com.example.service.UsuarioService; // ou UsuarioDAOArquivo
+import com.example.model.Usuario;
+import com.example.service.UsuarioService;
+import com.example.util.ConexaoBanco;
 import com.formdev.flatlaf.FlatLightLaf;
 
 public class Login extends javax.swing.JFrame {
 
     private UsuarioService usuarioService;
-
     public Login() {
         initComponents();
-
-        // Inicializa com a implementação desejada (banco ou arquivo)
-        IUsuarioDAO dao = new UsuarioDAOBanco(); // ou UsuarioDAOArquivo()
-        usuarioService = new UsuarioService(dao);
+        try {
+            Connection conn = ConexaoBanco.getConnection();
+            IUsuarioDAO dao = new UsuarioDAOBanco(conn);
+            usuarioService = new UsuarioService(dao);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados: " + e.getMessage());
+        }
     }
-
+    
     private void initComponents() {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -60,7 +66,10 @@ public class Login extends javax.swing.JFrame {
         jBNovoCadastro.setText("Criar novo cadastro");
         jBNovoCadastro.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jBNovoCadastro.setIconTextGap(12);
-        jBNovoCadastro.addActionListener(evt -> new CadastroUsuario().setVisible(true));
+        jBNovoCadastro.addActionListener(evt -> {
+            new CadastroUsuario().setVisible(true);
+            this.dispose();
+        });
 
         try {
             JFtxtCpf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(
@@ -124,17 +133,22 @@ public class Login extends javax.swing.JFrame {
     }
 
     private void loginUser() {
-        String cpf = JFtxtCpf.getText().replaceAll("[^\\d]", ""); // Remove máscara
+        String cpf = JFtxtCpf.getText().replaceAll("[^\\d]", ""); // Remove pontuação
+
+        if (cpf.isEmpty() || cpf.length() != 11) {
+            JOptionPane.showMessageDialog(this, "CPF inválido. Insira um CPF com 11 dígitos.");
+            return;
+        }
 
         try {
-            boolean sucesso = usuarioService.realizarLogin(cpf);
-            if (sucesso) {
+            Usuario usuario = usuarioService.buscarPorCpf(cpf);
+            if (usuario != null) {
                 JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
                 new Espetaculos().setVisible(true);
                 limpar();
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "CPF não encontrado. Login falhou.");
+                JOptionPane.showMessageDialog(this, "CPF não encontrado. Por favor, cadastre-se.");
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro ao tentar fazer login: " + ex.getMessage());

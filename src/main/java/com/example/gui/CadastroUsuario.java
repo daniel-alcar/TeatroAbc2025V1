@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -24,6 +25,7 @@ import com.example.dao.IUsuarioDAO;
 import com.example.dao.UsuarioDAOBanco;
 import com.example.model.Usuario;
 import com.example.service.UsuarioService;
+import com.example.util.ConexaoBanco;
 import com.formdev.flatlaf.FlatLightLaf;
 
 public class CadastroUsuario extends JFrame {
@@ -105,7 +107,7 @@ public class CadastroUsuario extends JFrame {
 
     private void cadastrarUsuario() {
         String nome = txtNome.getText().trim();
-        String cpf = txtCpf.getText().trim();
+        String cpf = txtCpf.getText().replaceAll("[^\\d]", "").trim();
         String dataNascimentoStr = txtDataNascimento.getText().trim();
         String telefone = txtTelefone.getText().trim();
         String logradouro = txtLogradouro.getText().trim();
@@ -143,13 +145,14 @@ public class CadastroUsuario extends JFrame {
         );
 
         try {
-            IUsuarioDAO dao = new UsuarioDAOBanco();
+            Connection conn = ConexaoBanco.getConnection();
+            IUsuarioDAO dao = new UsuarioDAOBanco(conn);
             UsuarioService service = new UsuarioService(dao);
             service.cadastrarUsuario(novoUsuario);
 
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!");
-            // Exemplo: abrir tela de login (se existir)
-            // new Login().setVisible(true);
+            
+            new Login().setVisible(true);
             this.dispose();
 
         } catch (IllegalArgumentException ex) {

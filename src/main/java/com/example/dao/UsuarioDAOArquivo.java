@@ -15,7 +15,7 @@ import com.example.model.Usuario;
 public class UsuarioDAOArquivo implements IUsuarioDAO {
 
     private static final String CAMINHO_ARQUIVO = "TeatroAbc2025V1\\usuarios.txt";
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void salvar(Usuario usuario) throws IOException {
@@ -25,7 +25,7 @@ public class UsuarioDAOArquivo implements IUsuarioDAO {
             pw.println(String.join(";",
                 usuario.getNome(),
                 usuario.getCpf(),
-                usuario.getDataNascimento().format(formatter),
+                usuario.getDataNascimento().format(FORMATTER),
                 usuario.getTelefone(),
                 usuario.getLogradouro(),
                 usuario.getBairro(),
@@ -37,6 +37,22 @@ public class UsuarioDAOArquivo implements IUsuarioDAO {
     }
 
     @Override
+    public Usuario buscarPorCPF(String cpf) throws Exception {
+        if (cpf == null || cpf.trim().isEmpty()) return null;
+
+        String cpfLimpo = cpf.replaceAll("[^\\d]", "");
+
+        for (Usuario usuario : carregarTodos()) {
+            if (usuario.getCpf() != null &&
+                usuario.getCpf().replaceAll("[^\\d]", "").equals(cpfLimpo)) {
+                return usuario;
+            }
+        }
+
+        return null; // Não encontrado
+    }
+
+    @Override
     public List<Usuario> carregarTodos() {
         List<Usuario> lista = new ArrayList<>();
 
@@ -45,22 +61,23 @@ public class UsuarioDAOArquivo implements IUsuarioDAO {
             while ((linha = br.readLine()) != null) {
                 String[] dados = linha.split(";");
                 if (dados.length == 9) {
-                    LocalDate dataNascimento = LocalDate.parse(dados[2], formatter);
-                    lista.add(new Usuario(
+                    LocalDate dataNascimento = LocalDate.parse(dados[2], FORMATTER);
+                    Usuario usuario = new Usuario(
                         dados[0],          // nome
                         dados[1],          // cpf
-                        dataNascimento,    // LocalDate
+                        dataNascimento,    // dataNascimento
                         dados[3],          // telefone
                         dados[4],          // logradouro
                         dados[5],          // bairro
                         dados[6],          // cep
                         dados[7],          // cidade
                         dados[8]           // uf
-                    ));
+                    );
+                    lista.add(usuario);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // log simples para debug
         }
 
         return lista;
@@ -68,20 +85,18 @@ public class UsuarioDAOArquivo implements IUsuarioDAO {
 
     @Override
     public boolean cpfExiste(String cpf) {
-        if (cpf == null || cpf.trim().isEmpty()) {
-            return false;
-        }
+        if (cpf == null || cpf.trim().isEmpty()) return false;
 
-        final String cpfLimpo = cpf.replaceAll("[^\\d]", "");
+        String cpfLimpo = cpf.replaceAll("[^\\d]", "");
 
-        return carregarTodos()
-                .stream()
+        return carregarTodos().stream()
                 .filter(u -> u.getCpf() != null)
                 .anyMatch(u -> u.getCpf().replaceAll("[^\\d]", "").equals(cpfLimpo));
     }
 
     @Override
     public List<Usuario> buscarTodos() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscarTodos'");
     }
 }
