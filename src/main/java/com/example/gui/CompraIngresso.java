@@ -7,14 +7,12 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.sql.Connection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,8 +23,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.example.dao.UsuarioDAOBanco;
+import com.example.dao.VendaIngressoDAOBanco;
 import com.example.model.Area;
+import com.example.model.Peca;
 import com.example.model.Sessao;
+import com.example.model.Usuario;
+import com.example.model.VendaIngresso;
 
 public class CompraIngresso extends JFrame {
 
@@ -35,33 +38,30 @@ public class CompraIngresso extends JFrame {
     private JComboBox<Integer> comboPoltrona;
     private JButton btnFinalizar;
 
-    // Mapa: Sessao -> Area -> Poltrona -> CPF comprador (null se disponível)
-    private Map<String, Map<String, Map<Integer, String>>> reservas;
-
     private List<Sessao> sessoes;
+    private Connection connection;
+    private VendaIngressoDAOBanco vendaDAO;
 
-    private static final String ARQUIVO_RESERVAS = "reservas.txt";
+    private Map<String, Sessao> mapSessoes = new HashMap<>();
+    private Map<String, Area> mapAreas = new HashMap<>();
 
-    public CompraIngresso(List<Sessao> sessoes) {
+    public CompraIngresso(List<Sessao> sessoes, Connection connection) {
         this.sessoes = sessoes;
-
-        reservas = new HashMap<>();
+        this.connection = connection;
+        this.vendaDAO = new VendaIngressoDAOBanco(connection);
 
         initComponentes();
-        inicializarReservas();
-        carregarReservasDoArquivo();
         atualizarAreas();
         atualizarPoltronas();
     }
 
     private void initComponentes() {
         setTitle("Compra de Ingresso");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(450, 350);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Título
         JLabel titulo = new JLabel("Compra de Ingresso");
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -69,33 +69,35 @@ public class CompraIngresso extends JFrame {
         titulo.setForeground(Color.BLACK);
         add(titulo, BorderLayout.NORTH);
 
-        // Painel central com GridBagLayout
         JPanel painelCentral = new JPanel();
         painelCentral.setBorder(new EmptyBorder(10, 30, 10, 30));
         painelCentral.setLayout(new GridBagLayout());
-        painelCentral.setBackground(new Color(250, 245, 240)); // tom neutro claro
+        painelCentral.setBackground(new Color(250, 245, 240));
         add(painelCentral, BorderLayout.CENTER);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Labels e combos
+        // Sessão
         JLabel lblSessao = new JLabel("Selecione a Sessão:");
         lblSessao.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lblSessao.setForeground(Color.BLACK);
         gbc.gridx = 0;
         gbc.gridy = 0;
         painelCentral.add(lblSessao, gbc);
 
         comboSessao = new JComboBox<>();
+        for (Sessao s : sessoes) {
+            comboSessao.addItem(s.getPeriodo());
+            mapSessoes.put(s.getPeriodo(), s);
+        }
         comboSessao.setPreferredSize(new Dimension(200, 30));
         gbc.gridx = 1;
         painelCentral.add(comboSessao, gbc);
 
+        // Área
         JLabel lblArea = new JLabel("Selecione a Área:");
         lblArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lblArea.setForeground(Color.BLACK);
         gbc.gridx = 0;
         gbc.gridy = 1;
         painelCentral.add(lblArea, gbc);
@@ -105,9 +107,9 @@ public class CompraIngresso extends JFrame {
         gbc.gridx = 1;
         painelCentral.add(comboArea, gbc);
 
+        // Poltrona
         JLabel lblPoltrona = new JLabel("Selecione a Poltrona:");
         lblPoltrona.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lblPoltrona.setForeground(Color.BLACK);
         gbc.gridx = 0;
         gbc.gridy = 2;
         painelCentral.add(lblPoltrona, gbc);
@@ -117,167 +119,117 @@ public class CompraIngresso extends JFrame {
         gbc.gridx = 1;
         painelCentral.add(comboPoltrona, gbc);
 
-        // Botão finalizar no rodapé
+        // Botão Finalizar
         btnFinalizar = new JButton("Finalizar Compra");
         btnFinalizar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnFinalizar.setBackground(new Color(255, 140, 0)); // laranja
+        btnFinalizar.setBackground(new Color(255, 140, 0));
         btnFinalizar.setForeground(Color.BLACK);
-        btnFinalizar.setFocusPainted(false);
         btnFinalizar.setPreferredSize(new Dimension(180, 40));
         JPanel painelBotao = new JPanel();
         painelBotao.setBorder(new EmptyBorder(10, 0, 20, 0));
         painelBotao.add(btnFinalizar);
         add(painelBotao, BorderLayout.SOUTH);
 
-        // Preencher comboSessao com os períodos das sessões
-        for (Sessao s : sessoes) {
-            comboSessao.addItem(s.getPeriodo());
-        }
-
-        // Quando trocar sessão, atualizar áreas e poltronas
         comboSessao.addActionListener(e -> {
             atualizarAreas();
             atualizarPoltronas();
         });
 
-        // Quando trocar área, atualizar poltronas
         comboArea.addActionListener(e -> atualizarPoltronas());
 
-        // Botão finalizar reserva a poltrona selecionada
         btnFinalizar.addActionListener(e -> finalizarCompra());
-    }
-
-    private void inicializarReservas() {
-        // Inicializa mapa reservas: todas as poltronas marcadas como disponíveis (null)
-        for (Sessao sessao : sessoes) {
-            String periodo = sessao.getPeriodo();
-            Map<String, Map<Integer, String>> mapaAreas = new HashMap<>();
-            reservas.put(periodo, mapaAreas);
-
-            for (Area area : sessao.getAreas()) {
-                Map<Integer, String> poltronas = new HashMap<>();
-                int capacidade = area.getCapacidadeMaxima();
-
-                for (int i = 1; i <= capacidade; i++) {
-                    poltronas.put(i, null);
-                }
-                mapaAreas.put(area.getTitulo(), poltronas);
-            }
-        }
-    }
-
-    private void carregarReservasDoArquivo() {
-        try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_RESERVAS))) {
-            String linha;
-            while ((linha = br.readLine()) != null) {
-                // Formato: sessao;area;poltrona;cpf
-                String[] partes = linha.split(";");
-                if (partes.length == 4) {
-                    String sessao = partes[0];
-                    String area = partes[1];
-                    int poltrona = Integer.parseInt(partes[2]);
-                    String cpf = partes[3];
-
-                    Map<String, Map<Integer, String>> mapaAreas = reservas.get(sessao);
-                    if (mapaAreas != null) {
-                        Map<Integer, String> poltronas = mapaAreas.get(area);
-                        if (poltronas != null && poltronas.containsKey(poltrona)) {
-                            poltronas.put(poltrona, cpf);
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Não foi possível carregar reservas do arquivo: " + e.getMessage());
-        }
-    }
-
-    private void salvarReservaNoArquivo(String sessao, String area, int poltrona, String cpf) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("reservas.txt", true))) {
-            bw.write(sessao + ";" + area + ";" + poltrona + ";" + cpf);
-            bw.newLine();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar reserva no arquivo.", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     private void atualizarAreas() {
         comboArea.removeAllItems();
-        String sessaoSelecionada = (String) comboSessao.getSelectedItem();
+        mapAreas.clear();
 
+        String sessaoSelecionada = (String) comboSessao.getSelectedItem();
         if (sessaoSelecionada == null) return;
 
-        Map<String, Map<Integer, String>> mapaAreas = reservas.get(sessaoSelecionada);
-        if (mapaAreas == null) return;
-
-        for (String area : mapaAreas.keySet()) {
-            comboArea.addItem(area);
+        Sessao sessao = mapSessoes.get(sessaoSelecionada);
+        if (sessao != null) {
+            for (Area a : sessao.getAreas()) {
+                comboArea.addItem(a.getTitulo());
+                mapAreas.put(a.getTitulo(), a);
+            }
         }
     }
 
     private void atualizarPoltronas() {
         comboPoltrona.removeAllItems();
+        String sessaoSelecionada = (String) comboSessao.getSelectedItem();
+        String areaSelecionada = (String) comboArea.getSelectedItem();
+        if (sessaoSelecionada == null || areaSelecionada == null) return;
 
-        String sessao = (String) comboSessao.getSelectedItem();
-        String area = (String) comboArea.getSelectedItem();
+        try {
+            Sessao sessao = mapSessoes.get(sessaoSelecionada);
+            Area area = mapAreas.get(areaSelecionada);
 
-        if (sessao == null || area == null) return;
+            if (sessao == null || area == null) return;
 
-        Map<String, Map<Integer, String>> mapaSessao = reservas.get(sessao);
-        if (mapaSessao == null) return;
-
-        Map<Integer, String> poltronas = mapaSessao.get(area);
-        if (poltronas == null) return;
-
-        boolean temDisponivel = false;
-        for (Map.Entry<Integer, String> entry : poltronas.entrySet()) {
-            if (entry.getValue() == null) { // poltrona não reservada
-                comboPoltrona.addItem(entry.getKey());
-                temDisponivel = true;
+            List<VendaIngresso> vendas = vendaDAO.buscarTodas();
+            Set<Integer> ocupadas = new HashSet<>();
+            for (VendaIngresso v : vendas) {
+                if (v.getSessao().getId() == sessao.getId() &&
+                    v.getArea().getId() == area.getId()) {
+                    ocupadas.add(v.getPoltrona());
+                }
             }
-        }
 
-        if (!temDisponivel) {
-            comboPoltrona.addItem(-1); // indica sem poltronas disponíveis
+            for (int i = 1; i <= area.getCapacidadeMaxima(); i++) {
+                if (!ocupadas.contains(i)) {
+                    comboPoltrona.addItem(i);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao atualizar poltronas: " + e.getMessage());
         }
     }
 
     private void finalizarCompra() {
-        String sessao = (String) comboSessao.getSelectedItem();
-        String area = (String) comboArea.getSelectedItem();
-        Integer poltrona = (Integer) comboPoltrona.getSelectedItem();
-
-        if (sessao == null || area == null || poltrona == null || poltrona == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione uma poltrona válida!", "Erro", JOptionPane.ERROR_MESSAGE);
+        String sessaoSelecionada = (String) comboSessao.getSelectedItem();
+        String areaSelecionada = (String) comboArea.getSelectedItem();
+        Integer poltronaSelecionada = (Integer) comboPoltrona.getSelectedItem();
+ 
+        System.out.println("ID da área selecionada: " + areaSelecionada + " | Título: " + areaSelecionada);
+ 
+        if (sessaoSelecionada == null || areaSelecionada == null || poltronaSelecionada == null) {
+            JOptionPane.showMessageDialog(this, "Selecione todos os campos.");
             return;
         }
 
-        Map<Integer, String> poltronas = reservas.get(sessao).get(area);
-
-        if (poltronas.get(poltrona) != null) {
-            JOptionPane.showMessageDialog(this, "Poltrona já reservada!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String cpf = JOptionPane.showInputDialog(this, "Digite seu CPF para confirmar a reserva:");
-
+        String cpf = JOptionPane.showInputDialog(this, "Digite o CPF do comprador:");
         if (cpf == null || cpf.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "CPF inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "CPF é obrigatório.");
             return;
         }
 
-        poltronas.put(poltrona, cpf.trim());
-        salvarReservaNoArquivo(sessao, area, poltrona, cpf.trim());
+        try {
+            UsuarioDAOBanco usuarioDAO = new UsuarioDAOBanco(connection);
+            Usuario usuario = usuarioDAO.buscarPorCPF(cpf);
+            if (usuario == null) {
+                JOptionPane.showMessageDialog(this, "Usuário não encontrado.");
+                return;
+            }
 
-        JOptionPane.showMessageDialog(this,
-            "Compra finalizada com sucesso!\nSessão: " + sessao + "\nÁrea: " + area + "\nPoltrona: " + poltrona + "\nCPF: " + cpf);
+            Sessao sessao = mapSessoes.get(sessaoSelecionada);
+            Area area = mapAreas.get(areaSelecionada);
 
-        // Fecha esta janela
-        this.dispose();
+            if (sessao == null || area == null) {
+                JOptionPane.showMessageDialog(this, "Erro interno: sessão ou área inválida.");
+                return;
+            }
 
-        // Abre a TelaPrincipal
-        TelaPrincipal telaPrincipal = new TelaPrincipal();
-        telaPrincipal.setVisible(true);
+            Peca peca = sessao.getPeca();
+            VendaIngresso venda = new VendaIngresso(usuario, area, poltronaSelecionada, peca, sessao);
+            vendaDAO.salvar(venda);
+
+            JOptionPane.showMessageDialog(this, "Compra realizada com sucesso!");
+            atualizarPoltronas();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao finalizar compra: " + ex.getMessage());
+        }
     }
-
 }

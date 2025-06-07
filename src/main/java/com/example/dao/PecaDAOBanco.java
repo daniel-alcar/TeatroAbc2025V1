@@ -19,10 +19,16 @@ public class PecaDAOBanco implements IPecaDAO {
 
     @Override
     public void salvar(Peca peca) throws Exception {
-        String sql = "INSERT INTO PECA (TITULO) VALUES (?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, peca.getTituloPeca());
+        String sql = "INSERT INTO PECA (titulo) VALUES (?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, peca.getTituloPeca()); // ajuste conforme o nome do getter da model
             stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    peca.setId(rs.getInt(1));
+                }
+            }
         }
     }
 
@@ -30,9 +36,10 @@ public class PecaDAOBanco implements IPecaDAO {
     public List<Peca> buscarTodas() throws Exception {
         List<Peca> pecas = new ArrayList<>();
         String sql = "SELECT * FROM peca";
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                Peca peca = new Peca(rs.getString("TITULO"));
+                Peca peca = new Peca(rs.getInt("ID_PECA"), rs.getString("titulo"));
                 pecas.add(peca);
             }
         }
@@ -41,12 +48,12 @@ public class PecaDAOBanco implements IPecaDAO {
 
     @Override
     public Peca buscarPorId(int id) throws Exception {
-        String sql = "SELECT * FROM PECA WHERE id = ?";
+        String sql = "SELECT * FROM PECA WHERE id_PECA = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Peca(rs.getString("titulo"));
+                    return new Peca(rs.getInt("id_PECA"), rs.getString("titulo"));
                 }
             }
         }

@@ -85,4 +85,8 @@ public class Sessao {
         }
         return sb.toString();
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

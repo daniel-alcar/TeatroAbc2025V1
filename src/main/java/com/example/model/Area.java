@@ -58,8 +58,6 @@ public class Area {
             throw new IllegalArgumentException("Número de poltrona inválido.");
         }
     }
-    
-    
 
     public String getTitulo() {
         return titulo;

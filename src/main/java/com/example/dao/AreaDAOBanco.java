@@ -20,12 +20,18 @@ public class AreaDAOBanco implements IAreaDAO {
 
     @Override
     public void salvar(Area area) throws Exception {
-        String sql = "INSERT INTO area (titulo, capacidade_maxima, preco) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        String sql = "INSERT INTO AREA (titulo, capacidade, preco) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, area.getTitulo());
             stmt.setInt(2, area.getCapacidadeMaxima());
             stmt.setDouble(3, area.getPreco());
             stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    area.setId(rs.getInt("ID_AREA"));
+                }
+            }
         }
     }
 
@@ -38,11 +44,11 @@ public class AreaDAOBanco implements IAreaDAO {
             while (rs.next()) {
                 Area area = new Area(
                         rs.getString("titulo"),
-                        rs.getInt("capacidade_maxima"),
+                        rs.getInt("capacidade"),
                         rs.getDouble("preco")
                 );
-                area.setId(rs.getInt("id")); // se sua classe Area tiver o campo id
-                area.setPoltronas(new HashMap<>()); // inicializa vazio
+                area.setId(rs.getInt("ID_AREA"));
+                area.setPoltronas(new HashMap<>());
                 areas.add(area);
             }
         }
@@ -51,17 +57,17 @@ public class AreaDAOBanco implements IAreaDAO {
 
     @Override
     public Area buscarPorId(int id) throws Exception {
-        String sql = "SELECT * FROM area WHERE id = ?";
+        String sql = "SELECT * FROM area WHERE ID_AREA = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Area area = new Area(
                             rs.getString("titulo"),
-                            rs.getInt("capacidade_maxima"),
+                            rs.getInt("capacidade"),
                             rs.getDouble("preco")
                     );
-                    area.setId(id); // novamente, se tiver ID
+                    area.setId(rs.getInt("ID_AREA"));
                     area.setPoltronas(new HashMap<>());
                     return area;
                 }

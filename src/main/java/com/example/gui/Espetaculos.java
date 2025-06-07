@@ -4,22 +4,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.sql.Connection;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-import com.example.model.Area;
-import com.example.model.Peca;
+import com.example.dao.SessaoDAOBanco;
 import com.example.model.Sessao;
+import com.example.util.ConexaoBanco;
 
 public class Espetaculos extends JFrame {
-
-    private List<Area> areas;
 
     private JButton btnPatrulha, btnAlladin, btnCisne;
 
@@ -32,26 +30,7 @@ public class Espetaculos extends JFrame {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setLayout(new BorderLayout());
 
-    initAreas();
     initUI();
-    }
-
-    private void initAreas() {
-        areas = new ArrayList<>();
-        areas.add(new Area("Platea A", 25, 40.0));
-        areas.add(new Area("Platea B", 100, 60.0));
-        areas.add(new Area("Camarote 01", 10, 80.0));
-        areas.add(new Area("Camarote 02", 10, 80.0));
-        areas.add(new Area("Camarote 03", 10, 80.0));
-        areas.add(new Area("Camarote 04", 10, 80.0));
-        areas.add(new Area("Camarote 05", 10, 80.0));
-        areas.add(new Area("Frisa 1", 5, 120.0));
-        areas.add(new Area("Frisa 2", 5, 120.0));
-        areas.add(new Area("Frisa 3", 5, 120.0));
-        areas.add(new Area("Frisa 4", 5, 120.0));
-        areas.add(new Area("Frisa 5", 5, 120.0));
-        areas.add(new Area("Frisa 6", 5, 120.0));
-        areas.add(new Area("Balcão", 50, 250.0));
     }
 
     private void initUI() {
@@ -89,14 +68,27 @@ public class Espetaculos extends JFrame {
     }
 
     private void abrirSessao(String horario, String nomePeca) {
-        Peca peca = new Peca(nomePeca); // Corrigido aqui
-        Sessao novaSessao = new Sessao(horario, peca, areas); // Agora funciona
-        CompraIngresso compraUI = new CompraIngresso(List.of(novaSessao));
-        compraUI.setVisible(true);
-        dispose();
-    }
+        try {
+            Connection connection = ConexaoBanco.getConnection();
+            SessaoDAOBanco sessaoDAO = new SessaoDAOBanco(connection);
+            List<Sessao> sessoes = sessaoDAO.buscarTodas();
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Espetaculos().setVisible(true));
+            Sessao novaSessao = sessoes.stream()
+                .filter(s -> s.getPeriodo().equals(horario) && s.getPeca().getTituloPeca().equals(nomePeca))
+                .findFirst()
+                .orElse(null);
+
+            if (novaSessao == null) {
+                JOptionPane.showMessageDialog(this, "Sessão não encontrada no banco!");
+                return;
+            }
+
+            CompraIngresso compraUI = new CompraIngresso(List.of(novaSessao), connection);
+            compraUI.setVisible(true);
+            dispose();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }
