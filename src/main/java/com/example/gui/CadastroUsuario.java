@@ -38,8 +38,9 @@ public class CadastroUsuario extends JFrame {
     public CadastroUsuario() {
         super("Cadastro de Usuário");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
         FlatLightLaf.setup();
         initUI();

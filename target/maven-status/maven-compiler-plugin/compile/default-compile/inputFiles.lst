@@ -2,6 +2,7 @@ C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\jav
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\ISessaoAreaDAO.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\SessaoAreaDAOBanco.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\gui\TelaPrincipal.java
+C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\IEstatisticaDAO.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\gui\Ingresso_Alladin.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\UsuarioDAOBanco.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\model\VendaIngresso.java
@@ -26,6 +27,7 @@ C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\jav
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\IPecaDAO.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\AreaDAOBanco.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\gui\CadastroUsuario.java
+C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\EstatisticaDAO.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\dao\VendaIngressoDAOBanco.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\model\Usuario.java
 C:\Users\danie\OneDrive\Documentos\ProjetoPi2025\TeatroAbc2025V1\pi\src\main\java\com\example\gui\Espetaculos.java

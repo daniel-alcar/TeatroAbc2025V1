@@ -192,7 +192,7 @@ public class CompraIngresso extends JFrame {
         String areaSelecionada = (String) comboArea.getSelectedItem();
         Integer poltronaSelecionada = (Integer) comboPoltrona.getSelectedItem();
  
-        System.out.println("ID da área selecionada: " + areaSelecionada + " | Título: " + areaSelecionada);
+        System.out.println("ID da área selecionada: " + areaSelecionada + " | Sessão: " + sessaoSelecionada + " | Poltrona: " + poltronaSelecionada);
  
         if (sessaoSelecionada == null || areaSelecionada == null || poltronaSelecionada == null) {
             JOptionPane.showMessageDialog(this, "Selecione todos os campos.");
