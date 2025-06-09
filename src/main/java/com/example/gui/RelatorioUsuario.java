@@ -42,7 +42,6 @@ public class RelatorioUsuario extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Painel principal com imagem de fundo
         JPanel painelPrincipal = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -60,7 +59,6 @@ public class RelatorioUsuario extends JFrame {
         };
         painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Painel de conteúdo com efeito de vidro fosco
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
         
@@ -99,7 +97,6 @@ public class RelatorioUsuario extends JFrame {
         try (Connection conexao = ConexaoBanco.getConnection()) {
             IEstatisticaDAO dao = new EstatisticaDAO(conexao);
 
-            // Adiciona os dados ao modelo
             String[] maisVendida = dao.pecaMaisV();
             modelo.addRow(new String[]{"Peça mais vendida", maisVendida[0] + " (" + maisVendida[1] + " ingressos)"});
 
@@ -127,13 +124,11 @@ public class RelatorioUsuario extends JFrame {
 
         tabelaEstatisticas = new JTable(modelo);
         
-        // Estilização avançada da tabela
         tabelaEstatisticas.setRowHeight(35);
         tabelaEstatisticas.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         tabelaEstatisticas.setShowGrid(false);
         tabelaEstatisticas.setIntercellSpacing(new Dimension(0, 5));
         
-        // Estilo do cabeçalho
         JTableHeader header = tabelaEstatisticas.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 16));
         header.setBackground(new Color(70, 130, 180));
@@ -167,7 +162,6 @@ public class RelatorioUsuario extends JFrame {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setOpaque(false);
         
-        // Painel com gradiente
         JPanel gradientePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -195,7 +189,7 @@ public class RelatorioUsuario extends JFrame {
                 icone.setIcon(new ImageIcon(imgRedimensionada));
             }
         } catch (Exception e) {
-            // Ignora se o ícone não carregar
+
         }
         
         gradientePanel.add(label, BorderLayout.CENTER);

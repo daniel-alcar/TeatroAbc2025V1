@@ -31,7 +31,6 @@ public class TelaPrincipal extends JFrame {
     panelMenu.setPreferredSize(new Dimension(266, 789));
     panelMenu.setLayout(null);
 
-    // Botão Cadastro
     JButton jButtonUsuario = new JButton("Cadastro");
     jButtonUsuario.setFont(new Font("Segoe UI", Font.BOLD, 24));
     jButtonUsuario.setForeground(Color.WHITE);
@@ -45,7 +44,6 @@ public class TelaPrincipal extends JFrame {
     jButtonUsuario.addActionListener(evt -> new Login().setVisible(true));
     panelMenu.add(jButtonUsuario);
 
-    // Botão Espetáculos
     JButton jButtonEspetaculo = new JButton("Espetáculos");
     jButtonEspetaculo.setFont(new Font("Segoe UI", Font.BOLD, 24));
     jButtonEspetaculo.setForeground(Color.WHITE);
@@ -59,7 +57,6 @@ public class TelaPrincipal extends JFrame {
     jButtonEspetaculo.addActionListener(evt -> new Login().setVisible(true));
     panelMenu.add(jButtonEspetaculo);
 
-    // Botão Relatórios
     JButton jButtonRelatorios = new JButton("Relatórios");
     jButtonRelatorios.setFont(new Font("Segoe UI", Font.BOLD, 24));
     jButtonRelatorios.setForeground(Color.WHITE);
@@ -73,7 +70,7 @@ public class TelaPrincipal extends JFrame {
     jButtonRelatorios.addActionListener(evt -> new RelatorioUsuario().setVisible(true));
     panelMenu.add(jButtonRelatorios);
 
-    // Botão Buscar Ingresso
+
     JButton jButtonBuscarIngresso = new JButton("Buscar Ingresso");
     jButtonBuscarIngresso.setFont(new Font("Segoe UI", Font.BOLD, 24));
     jButtonBuscarIngresso.setForeground(Color.WHITE);
@@ -106,7 +103,7 @@ public class TelaPrincipal extends JFrame {
 }
 
     public static void main(String[] args) {
-        FlatLightLaf.setup(); // Aplica tema FlatLaf claro
+        FlatLightLaf.setup(); 
 
         EventQueue.invokeLater(() -> new TelaPrincipal().setVisible(true));
     }

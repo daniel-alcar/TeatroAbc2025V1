@@ -42,7 +42,6 @@ public class Espetaculos extends JFrame {
         btnAlladin = new JButton("Alladin");
         btnCisne = new JButton("Cisne Negro");
 
-        // Carregar ícones - ajuste o caminho conforme sua estrutura de projeto
         try {
             btnPatrulha.setIcon(new ImageIcon(getClass().getResource("/icons/ESPETACULO_PATRULHA.png")));
             btnAlladin.setIcon(new ImageIcon(getClass().getResource("/icons/Alladin.png")));
@@ -51,7 +50,6 @@ public class Espetaculos extends JFrame {
             System.err.println("Erro ao carregar imagens: " + e.getMessage());
         }
 
-        // Remover borda padrão para um visual mais limpo
         btnPatrulha.setBorder(null);
         btnAlladin.setBorder(null);
         btnCisne.setBorder(null);

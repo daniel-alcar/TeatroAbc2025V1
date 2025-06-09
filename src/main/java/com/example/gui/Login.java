@@ -164,7 +164,6 @@ public class Login extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
     }
 
-    // Componentes
     private javax.swing.JFormattedTextField JFtxtCpf;
     private javax.swing.JButton jBNovoCadastro;
     private javax.swing.JButton jButtonLogar;

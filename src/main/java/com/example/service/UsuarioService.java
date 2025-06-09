@@ -18,7 +18,6 @@ public class UsuarioService {
         this.usuarioDAO = new UsuarioDAOBanco(conn);
     }
 
-    // Para testes ou flexibilidade, pode manter também este construtor opcional:
     public UsuarioService(IUsuarioDAO usuarioDAO) {
         this.usuarioDAO = usuarioDAO;
     }

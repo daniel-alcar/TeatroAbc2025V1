@@ -231,7 +231,6 @@ public class Ingresso_Alladin extends javax.swing.JFrame {
         }
     }
 
-    // Variables declaration
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
@@ -245,7 +244,6 @@ public class Ingresso_Alladin extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextAreaIngresso;
-    // End of variables declaration
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {

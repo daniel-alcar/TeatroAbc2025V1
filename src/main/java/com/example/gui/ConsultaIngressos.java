@@ -27,16 +27,13 @@ public class ConsultaIngressos extends JFrame {
     private JButton btnBuscar;
     private JTextArea areaResultados;
 
-    // Mesmo mapa de reservas do CompraIngresso
     private Map<String, Map<String, Map<Integer, String>>> reservas;
 
-    // Construtor que recebe mapa de reservas
     public ConsultaIngressos(Map<String, Map<String, Map<Integer, String>>> reservas) {
         this.reservas = reservas;
         initComponentes();
     }
 
-    // Construtor padrão para facilitar chamada sem mapa (ex: para testes)
     public ConsultaIngressos() {
         this.reservas = CarregarReservas.carregarReservasDeArquivo("RESERVAS.TXT");
         initComponentes();
@@ -49,14 +46,12 @@ public class ConsultaIngressos extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Título
         JLabel titulo = new JLabel("Consulta de Ingressos");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBorder(new EmptyBorder(15, 0, 15, 0));
         add(titulo, BorderLayout.NORTH);
 
-        // Painel para entrada do CPF e botão
         JPanel painelEntrada = new JPanel();
         painelEntrada.setBorder(new EmptyBorder(10, 20, 10, 20));
         painelEntrada.setLayout(null);
@@ -76,7 +71,6 @@ public class ConsultaIngressos extends JFrame {
 
         add(painelEntrada, BorderLayout.CENTER);
 
-        // Área para mostrar resultados
         areaResultados = new JTextArea();
         areaResultados.setEditable(false);
         areaResultados.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -85,7 +79,6 @@ public class ConsultaIngressos extends JFrame {
         scroll.setPreferredSize(new Dimension(450, 250));
         add(scroll, BorderLayout.SOUTH);
 
-        // Ação do botão buscar
         btnBuscar.addActionListener(e -> buscarReservas());
     }
 
@@ -130,7 +123,6 @@ public class ConsultaIngressos extends JFrame {
         }
     }
 
-    // Método main para rodar a aplicação
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
             ConsultaIngressos consulta = new ConsultaIngressos();
