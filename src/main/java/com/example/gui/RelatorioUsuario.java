@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.sql.Connection;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -115,8 +116,13 @@ public class RelatorioUsuario extends JFrame {
             String[] pecaMenosLucrativa = dao.pecaMenosLucrativa();
             modelo.addRow(new String[]{"Peça menos lucrativa", pecaMenosLucrativa[0] + " (R$ " + pecaMenosLucrativa[1] + ")"});
 
-            String[] faturamentoMedio = dao.faturamentoMedio();
-            modelo.addRow(new String[]{"Faturamento médio (R$)", "R$ " + faturamentoMedio[1]});
+            List<String[]> faturamentoMedio = dao.faturamentoMedio();
+            for (String[] resultado : faturamentoMedio) {
+                modelo.addRow(new String[]{
+                    resultado[0] + " (total " + resultado[1] + ")",
+                    "Faturamento total R$ " + resultado[2] + " | Faturamento médio R$ " + resultado[3]
+                });
+            }
 
         } catch (Exception e) {
             mostrarErro("Erro ao carregar estatísticas: " + e.getMessage());

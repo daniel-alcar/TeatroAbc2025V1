@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EstatisticaDAO implements IEstatisticaDAO {
 
@@ -154,22 +156,35 @@ public class EstatisticaDAO implements IEstatisticaDAO {
     }
 
     @Override
-    public String[] faturamentoMedio() throws Exception {
+    public List<String[]> faturamentoMedio() throws Exception {
         String sql = """
-            SELECT 
-                COUNT(*) AS TOTAL_VENDAS,
+            SELECT
+                P.TITULO,
+                COUNT(V.ID_VENDAINGRESSO) AS TOTAL_VENDAS,
+                SUM(A.PRECO) AS FATURAMENTO_TOTAL,
                 AVG(A.PRECO) AS FATURAMENTO_MEDIO
             FROM VENDAINGRESSO V
-            JOIN AREA A ON V.AREA_ID = A.ID_AREA;
+            JOIN PECA P ON V.PECA_ID = P.ID_PECA
+            JOIN AREA A ON V.AREA_ID = A.ID_AREA
+            GROUP BY P.ID_PECA, P.TITULO;
             """;
+        
+            List<String[]> resultados = new ArrayList<>();
+
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                return new String[] { String.valueOf(rs.getInt("TOTAL_VENDAS")), String.format("%.2f", rs.getDouble("FATURAMENTO_MEDIO")) };
+            while (rs.next()) {
+                resultados.add(new String[] {
+                    rs.getString("TITULO"),
+                    String.valueOf(rs.getInt("TOTAL_VENDAS")),
+                    String.format("%.2f", rs.getDouble("FATURAMENTO_TOTAL")), 
+                    String.format("%.2f", rs.getDouble("FATURAMENTO_MEDIO"))
+                });
             }
+                
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return resultados;
     }
 }
