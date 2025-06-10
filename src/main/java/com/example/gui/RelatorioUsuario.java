@@ -104,10 +104,10 @@ public class RelatorioUsuario extends JFrame {
             modelo.addRow(new String[]{"Peça menos vendida", menosVendida[0] + " (" + menosVendida[1] + " ingressos)"});
 
             String[] sessaoMaisOcupada = dao.sessaoMaisOcupada();
-            modelo.addRow(new String[]{"Sessão mais ocupada", sessaoMaisOcupada[0] + " (" + sessaoMaisOcupada[1] + " sessões)"});
+            modelo.addRow(new String[]{"Sessão mais ocupada", sessaoMaisOcupada[0] + " (" + sessaoMaisOcupada[1] + " poltronas)"});
 
             String[] sessaoMenosOcupada = dao.sessaoMenosOcupada();
-            modelo.addRow(new String[]{"Sessão menos ocupada", sessaoMenosOcupada[0] + " (" + sessaoMenosOcupada[1] + " sessões)"});
+            modelo.addRow(new String[]{"Sessão menos ocupada", sessaoMenosOcupada[0] + " (" + sessaoMenosOcupada[1] + " poltronas)"});
 
             String[] pecaMaisLucrativa = dao.pecaMaisLucrativa();
             modelo.addRow(new String[]{"Peça mais lucrativa", pecaMaisLucrativa[0] + " (R$ " + pecaMaisLucrativa[1] + ")"});
