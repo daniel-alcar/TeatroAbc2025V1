@@ -55,7 +55,7 @@ public class Espetaculos extends JFrame {
         btnCisne.setBorder(null);
 
         btnPatrulha.addActionListener((ActionEvent e) -> abrirSessao("Manhã", "Patrulha Canina"));
-        btnAlladin.addActionListener((ActionEvent e) -> abrirSessao("Tarde", "Alladin"));
+        btnAlladin.addActionListener((ActionEvent e) -> abrirSessao("Tarde", "Aladdin"));
         btnCisne.addActionListener((ActionEvent e) -> abrirSessao("Noite", "Cisne Negro"));
 
         panel.add(btnPatrulha);
