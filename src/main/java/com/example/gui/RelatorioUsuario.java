@@ -135,7 +135,6 @@ public class RelatorioUsuario extends JFrame {
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         
-        // Renderizador personalizado
         tabelaEstatisticas.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, 

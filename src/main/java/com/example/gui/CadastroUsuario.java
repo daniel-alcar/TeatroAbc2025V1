@@ -65,6 +65,14 @@ public class CadastroUsuario extends JFrame {
         txtCep = new JTextField();
         txtCidade = new JTextField();
         txtUf = new JTextField();
+        txtUf.setDocument(new javax.swing.text.PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, javax.swing.text.AttributeSet a) throws javax.swing.text.BadLocationException {
+                if (getLength() < 2) {
+                    super.insertString(offs, str.toUpperCase(), a);
+                }
+            }
+        });
         chkFidelidade = new JRadioButton("Ativar Fidelidade");
 
         formPanel.add(new JLabel("Nome:"));
@@ -115,11 +123,17 @@ public class CadastroUsuario extends JFrame {
         String bairro = txtBairro.getText().trim();
         String cep = txtCep.getText().trim();
         String cidade = txtCidade.getText().trim();
-        String uf = txtUf.getText().trim();
+        String uf = txtUf.getText().trim().toUpperCase();
 
         // Validação simples
         if (nome.isEmpty() || cpf.isEmpty() || dataNascimentoStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha os campos Nome, CPF e Data de Nascimento.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validação do UF
+        if (uf.length() != 2) {
+            JOptionPane.showMessageDialog(this, "O campo UF deve conter exatamente 2 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

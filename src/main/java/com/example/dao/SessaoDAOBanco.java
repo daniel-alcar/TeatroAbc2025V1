@@ -53,7 +53,6 @@ public class SessaoDAOBanco implements ISessaoDAO {
 
                 Peca peca = new Peca(pecaId, tituloPeca);
 
-                // Buscar áreas associadas à sessão
                 List<Area> areas = buscarAreasPorSessao(sessaoId);
 
                 Sessao sessao = new Sessao(sessaoId, periodo, peca, areas);

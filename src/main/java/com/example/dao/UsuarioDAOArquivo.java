@@ -49,7 +49,7 @@ public class UsuarioDAOArquivo implements IUsuarioDAO {
             }
         }
 
-        return null; // Não encontrado
+        return null; 
     }
 
     @Override
@@ -77,7 +77,7 @@ public class UsuarioDAOArquivo implements IUsuarioDAO {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace(); // log simples para debug
+            e.printStackTrace(); 
         }
 
         return lista;
