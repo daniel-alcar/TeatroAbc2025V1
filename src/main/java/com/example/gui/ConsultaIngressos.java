@@ -28,9 +28,12 @@ import com.example.util.ConexaoBanco;
 
 public class ConsultaIngressos extends JFrame {
 
+    private static final int MIN_WIDTH = 800;
+    private static final int MIN_HEIGHT = 600;
     private JTextField txtCpf;
     private JButton btnBuscar;
     private JPanel painelResultados;
+    private JScrollPane scroll;
 
     public ConsultaIngressos() {
         initComponentes();
@@ -39,7 +42,7 @@ public class ConsultaIngressos extends JFrame {
     private void initComponentes() {
         setTitle("Consulta de Ingressos");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Abre maximizada
+        setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -83,7 +86,7 @@ public class ConsultaIngressos extends JFrame {
 
         txtCpf = new JTextField(20);
         txtCpf.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtCpf.setPreferredSize(new Dimension(250, 30));
+        txtCpf.setPreferredSize(new Dimension(250, 35));
         gbc.gridx = 1;
         gbc.gridy = 0;
         painelBusca.add(txtCpf, gbc);
@@ -100,12 +103,12 @@ public class ConsultaIngressos extends JFrame {
 
         painelPrincipal.add(painelBusca, BorderLayout.NORTH);
 
-        // Substituir a área de resultados por um painel
+        // Painel de resultados com scroll
         painelResultados = new JPanel();
         painelResultados.setLayout(new GridBagLayout());
         painelResultados.setBackground(Color.WHITE);
 
-        JScrollPane scroll = new JScrollPane(painelResultados);
+        scroll = new JScrollPane(painelResultados);
         scroll.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(200, 200, 200)), 
             " Resultados ",
@@ -113,7 +116,14 @@ public class ConsultaIngressos extends JFrame {
             TitledBorder.TOP,
             new Font("Segoe UI", Font.BOLD, 14),
             new Color(70, 70, 70)));
-        scroll.setPreferredSize(new Dimension(800, 400));
+        
+        // Otimizações do scroll
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.getHorizontalScrollBar().setUnitIncrement(16);
+        scroll.setWheelScrollingEnabled(true);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroll.setAutoscrolls(true);
 
         painelPrincipal.add(scroll, BorderLayout.CENTER);
 
@@ -145,6 +155,7 @@ public class ConsultaIngressos extends JFrame {
             gbc.gridwidth = GridBagConstraints.REMAINDER;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.weightx = 1.0; // Permite que os componentes se expandam horizontalmente
 
             if (resultados.isEmpty()) {
                 JLabel lblNenhum = new JLabel("Nenhum ingresso encontrado para o CPF: " + formatarCPF(cpfBusca));
@@ -156,7 +167,7 @@ public class ConsultaIngressos extends JFrame {
                 painelResultados.add(lblTitulo, gbc);
 
                 for (int i = 0; i < resultados.size(); i++) {
-                    JPanel painelIngresso = new JPanel(new BorderLayout());
+                    JPanel painelIngresso = new JPanel(new BorderLayout(10, 5));
                     painelIngresso.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
                     painelIngresso.setBackground(Color.WHITE);
 
@@ -171,6 +182,7 @@ public class ConsultaIngressos extends JFrame {
                     txtDetalhes.setLineWrap(true);
                     txtDetalhes.setWrapStyleWord(true);
                     txtDetalhes.setBackground(Color.WHITE);
+                    txtDetalhes.setRows(3); // Limita o número de linhas visíveis
                     painelIngresso.add(txtDetalhes, BorderLayout.CENTER);
 
                     JButton btnImprimir = new JButton("Imprimir");
@@ -178,6 +190,7 @@ public class ConsultaIngressos extends JFrame {
                     btnImprimir.setBackground(new Color(255, 102, 0));
                     btnImprimir.setForeground(Color.WHITE);
                     btnImprimir.setFocusPainted(false);
+                    btnImprimir.setPreferredSize(new Dimension(120, 35));
                     final int index = i;
                     btnImprimir.addActionListener(e -> imprimirIngresso(resultados.get(index)));
                     painelIngresso.add(btnImprimir, BorderLayout.SOUTH);
@@ -186,8 +199,10 @@ public class ConsultaIngressos extends JFrame {
                 }
             }
 
+            // Otimização da atualização do painel
             painelResultados.revalidate();
             painelResultados.repaint();
+            scroll.getViewport().setViewPosition(new java.awt.Point(0, 0)); // Volta ao topo
 
         } catch (Exception ex) {
             ex.printStackTrace();

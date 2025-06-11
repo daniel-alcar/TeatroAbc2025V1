@@ -169,7 +169,7 @@ public class EstatisticaDAO implements IEstatisticaDAO {
             GROUP BY P.ID_PECA, P.TITULO;
             """;
         
-            List<String[]> resultados = new ArrayList<>();
+        List<String[]> resultados = new ArrayList<>();
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -181,7 +181,6 @@ public class EstatisticaDAO implements IEstatisticaDAO {
                     String.format("%.2f", rs.getDouble("FATURAMENTO_MEDIO"))
                 });
             }
-                
         } catch (SQLException e) {
             e.printStackTrace();
         }

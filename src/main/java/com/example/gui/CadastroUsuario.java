@@ -1,15 +1,22 @@
 package com.example.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -30,6 +37,9 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 public class CadastroUsuario extends JFrame {
 
+    private static final int MIN_WIDTH = 800;
+    private static final int MIN_HEIGHT = 600;
+    private Image backgroundImage;
     private JTextField txtNome, txtLogradouro, txtBairro, txtCep, txtCidade, txtUf;
     private JFormattedTextField txtCpf, txtDataNascimento, txtTelefone;
     private JRadioButton chkFidelidade;
@@ -38,7 +48,7 @@ public class CadastroUsuario extends JFrame {
     public CadastroUsuario() {
         super("Cadastro de Usuário");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -47,9 +57,25 @@ public class CadastroUsuario extends JFrame {
     }
 
     private void initUI() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        JPanel formPanel = new JPanel(new GridLayout(10, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel mainPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (backgroundImage != null) {
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+
+        // Carregar imagem de fundo
+        URL bgUrl = getClass().getResource("/Icons/backgroudlogin.jpg");
+        if (bgUrl != null) {
+            backgroundImage = new ImageIcon(bgUrl).getImage();
+        }
+
+        JPanel formPanel = new JPanel(new GridLayout(10, 2, 20, 20));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        formPanel.setOpaque(false);
 
         try {
             txtCpf = new JFormattedTextField(new MaskFormatter("###.###.###-##"));
@@ -59,12 +85,21 @@ public class CadastroUsuario extends JFrame {
             ex.printStackTrace();
         }
 
-        txtNome = new JTextField();
-        txtLogradouro = new JTextField();
-        txtBairro = new JTextField();
-        txtCep = new JTextField();
-        txtCidade = new JTextField();
-        txtUf = new JTextField();
+        // Configuração dos campos
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 14);
+        Font fieldFont = new Font("Segoe UI", Font.PLAIN, 14);
+        Color labelColor = new Color(255, 102, 0); // Cor laranja do sistema
+
+        txtNome = createStyledTextField(fieldFont);
+        txtLogradouro = createStyledTextField(fieldFont);
+        txtBairro = createStyledTextField(fieldFont);
+        txtCep = createStyledTextField(fieldFont);
+        txtCidade = createStyledTextField(fieldFont);
+        txtUf = createStyledTextField(fieldFont);
+        txtCpf.setFont(fieldFont);
+        txtDataNascimento.setFont(fieldFont);
+        txtTelefone.setFont(fieldFont);
+
         txtUf.setDocument(new javax.swing.text.PlainDocument() {
             @Override
             public void insertString(int offs, String str, javax.swing.text.AttributeSet a) throws javax.swing.text.BadLocationException {
@@ -73,36 +108,32 @@ public class CadastroUsuario extends JFrame {
                 }
             }
         });
+
         chkFidelidade = new JRadioButton("Ativar Fidelidade");
+        chkFidelidade.setFont(fieldFont);
+        chkFidelidade.setForeground(labelColor);
 
-        formPanel.add(new JLabel("Nome:"));
-        formPanel.add(txtNome);
-        formPanel.add(new JLabel("CPF:"));
-        formPanel.add(txtCpf);
-        formPanel.add(new JLabel("Data de Nascimento (dd/MM/yyyy):"));
-        formPanel.add(txtDataNascimento);
-        formPanel.add(new JLabel("Telefone:"));
-        formPanel.add(txtTelefone);
-        formPanel.add(new JLabel("Logradouro:"));
-        formPanel.add(txtLogradouro);
-        formPanel.add(new JLabel("Bairro:"));
-        formPanel.add(txtBairro);
-        formPanel.add(new JLabel("CEP:"));
-        formPanel.add(txtCep);
-        formPanel.add(new JLabel("Cidade:"));
-        formPanel.add(txtCidade);
-        formPanel.add(new JLabel("UF:"));
-        formPanel.add(txtUf);
-        formPanel.add(new JLabel("Fidelidade:"));
-        formPanel.add(chkFidelidade);
+        // Adicionando labels e campos com estilo
+        addFormField(formPanel, "Nome:", txtNome, labelFont, labelColor);
+        addFormField(formPanel, "CPF:", txtCpf, labelFont, labelColor);
+        addFormField(formPanel, "Data de Nascimento (dd/MM/yyyy):", txtDataNascimento, labelFont, labelColor);
+        addFormField(formPanel, "Telefone:", txtTelefone, labelFont, labelColor);
+        addFormField(formPanel, "Logradouro:", txtLogradouro, labelFont, labelColor);
+        addFormField(formPanel, "Bairro:", txtBairro, labelFont, labelColor);
+        addFormField(formPanel, "CEP:", txtCep, labelFont, labelColor);
+        addFormField(formPanel, "Cidade:", txtCidade, labelFont, labelColor);
+        addFormField(formPanel, "UF:", txtUf, labelFont, labelColor);
+        addFormField(formPanel, "Fidelidade:", chkFidelidade, labelFont, labelColor);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        btnCadastrar = new JButton("Cadastrar");
-        btnVoltar = new JButton("Voltar");
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        buttonPanel.setOpaque(false);
+
+        btnCadastrar = createStyledButton("Cadastrar", new Color(255, 102, 0));
+        btnVoltar = createStyledButton("Voltar", new Color(51, 51, 51));
 
         btnCadastrar.addActionListener((ActionEvent e) -> cadastrarUsuario());
         btnVoltar.addActionListener((ActionEvent e) -> {
-            JOptionPane.showMessageDialog(this, "Voltando ao menu...");
+            new Login().setVisible(true);
             dispose();
         });
 
@@ -112,6 +143,30 @@ public class CadastroUsuario extends JFrame {
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         add(mainPanel);
+    }
+
+    private JTextField createStyledTextField(Font font) {
+        JTextField field = new JTextField();
+        field.setFont(font);
+        field.setPreferredSize(new Dimension(200, 30));
+        return field;
+    }
+
+    private JButton createStyledButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setForeground(Color.WHITE);
+        button.setBackground(backgroundColor);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        return button;
+    }
+
+    private void addFormField(JPanel panel, String labelText, javax.swing.JComponent field, Font labelFont, Color labelColor) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(labelFont);
+        label.setForeground(labelColor);
+        panel.add(label);
+        panel.add(field);
     }
 
     private void cadastrarUsuario() {

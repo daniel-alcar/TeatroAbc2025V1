@@ -34,42 +34,31 @@ import com.example.util.ConexaoBanco;
 
 public class RelatorioUsuario extends JFrame {
 
+    private static final int MIN_WIDTH = 800;
+    private static final int MIN_HEIGHT = 600;
     private JTable tabelaEstatisticas;
 
     public RelatorioUsuario() {
         super("Relatório de Estatísticas do Teatro");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        JPanel painelPrincipal = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                try {
-                    ImageIcon icon = new ImageIcon(getClass().getResource("/Icons/theater-bg.jpg"));
-                    if (icon.getImage() != null) {
-                        g.drawImage(icon.getImage(), 0, 0, getWidth(), getHeight(), this);
-                    }
-                } catch (Exception e) {
-                    g.setColor(new Color(240, 240, 240));
-                    g.fillRect(0, 0, getWidth(), getHeight());
-                }
-            }
-        };
+        JPanel painelPrincipal = new JPanel(new BorderLayout());
+        painelPrincipal.setBackground(Color.WHITE);
         painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setOpaque(false);
+        contentPanel.setBackground(Color.WHITE);
         
         JPanel glassPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
-                g2d.setColor(new Color(255, 255, 255, 220));
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.95f));
+                g2d.setColor(new Color(255, 255, 255));
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25);
                 g2d.dispose();
             }
@@ -77,7 +66,7 @@ public class RelatorioUsuario extends JFrame {
         glassPanel.setOpaque(false);
         glassPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        glassPanel.add(criarCabecalho("Estatísticas do Teatro", "/icons/stats.png"), BorderLayout.NORTH);
+        glassPanel.add(criarCabecalho("Estatísticas do Teatro", "/Icons/estatistica.png"), BorderLayout.NORTH);
         glassPanel.add(new JScrollPane(criarTabelaEstatisticas()), BorderLayout.CENTER);
         
         contentPanel.add(glassPanel, BorderLayout.CENTER);
@@ -130,16 +119,16 @@ public class RelatorioUsuario extends JFrame {
 
         tabelaEstatisticas = new JTable(modelo);
         
-        tabelaEstatisticas.setRowHeight(35);
-        tabelaEstatisticas.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        tabelaEstatisticas.setRowHeight(40);
+        tabelaEstatisticas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabelaEstatisticas.setShowGrid(false);
         tabelaEstatisticas.setIntercellSpacing(new Dimension(0, 5));
         
         JTableHeader header = tabelaEstatisticas.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        header.setBackground(new Color(70, 130, 180));
+        header.setBackground(new Color(255, 102, 0));
         header.setForeground(Color.WHITE);
-        header.setPreferredSize(new Dimension(header.getWidth(), 40));
+        header.setPreferredSize(new Dimension(header.getWidth(), 45));
         
         tabelaEstatisticas.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -148,7 +137,7 @@ public class RelatorioUsuario extends JFrame {
                 Component c = super.getTableCellRendererComponent(table, value, 
                     isSelected, hasFocus, row, column);
                 
-                c.setBackground(row % 2 == 0 ? new Color(240, 240, 240) : Color.WHITE);
+                c.setBackground(row % 2 == 0 ? new Color(250, 250, 250) : Color.WHITE);
                 if (column == 1) {
                     c.setFont(c.getFont().deriveFont(Font.BOLD));
                     if (value.toString().contains("R$")) {
@@ -194,7 +183,7 @@ public class RelatorioUsuario extends JFrame {
                 icone.setIcon(new ImageIcon(imgRedimensionada));
             }
         } catch (Exception e) {
-
+            System.err.println("Erro ao carregar ícone: " + e.getMessage());
         }
         
         gradientePanel.add(label, BorderLayout.CENTER);
@@ -212,7 +201,6 @@ public class RelatorioUsuario extends JFrame {
         SwingUtilities.invokeLater(() -> {
             RelatorioUsuario frame = new RelatorioUsuario();
             frame.setVisible(true);
-            
         });
     }
 }

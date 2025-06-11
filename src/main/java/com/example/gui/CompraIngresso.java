@@ -33,6 +33,8 @@ import com.example.model.VendaIngresso;
 
 public class CompraIngresso extends JFrame {
 
+    private static final int MIN_WIDTH = 600;
+    private static final int MIN_HEIGHT = 500;
     private JComboBox<String> comboSessao;
     private JComboBox<String> comboArea;
     private JComboBox<Integer> comboPoltrona;
@@ -58,30 +60,38 @@ public class CompraIngresso extends JFrame {
     private void initComponentes() {
         setTitle("Compra de Ingresso");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(450, 350);
+        setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Painel do título
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(Color.WHITE);
+        titlePanel.setBorder(new EmptyBorder(20, 0, 20, 0));
+
         JLabel titulo = new JLabel("Compra de Ingresso");
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titulo.setBorder(new EmptyBorder(15, 0, 20, 0));
-        titulo.setForeground(Color.BLACK);
-        add(titulo, BorderLayout.NORTH);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titulo.setForeground(new Color(255, 102, 0));
+        titlePanel.add(titulo, BorderLayout.CENTER);
+        add(titlePanel, BorderLayout.NORTH);
 
+        // Painel central
         JPanel painelCentral = new JPanel();
-        painelCentral.setBorder(new EmptyBorder(10, 30, 10, 30));
+        painelCentral.setBorder(new EmptyBorder(20, 50, 20, 50));
         painelCentral.setLayout(new GridBagLayout());
-        painelCentral.setBackground(new Color(250, 245, 240));
+        painelCentral.setBackground(Color.WHITE);
         add(painelCentral, BorderLayout.CENTER);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(15, 15, 15, 15);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Sessão
         JLabel lblSessao = new JLabel("Selecione a Sessão:");
-        lblSessao.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblSessao.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblSessao.setForeground(new Color(255, 102, 0));
         gbc.gridx = 0;
         gbc.gridy = 0;
         painelCentral.add(lblSessao, gbc);
@@ -91,42 +101,50 @@ public class CompraIngresso extends JFrame {
             comboSessao.addItem(s.getPeriodo());
             mapSessoes.put(s.getPeriodo(), s);
         }
-        comboSessao.setPreferredSize(new Dimension(200, 30));
+        comboSessao.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboSessao.setPreferredSize(new Dimension(300, 35));
         gbc.gridx = 1;
         painelCentral.add(comboSessao, gbc);
 
         // Área
         JLabel lblArea = new JLabel("Selecione a Área:");
-        lblArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblArea.setForeground(new Color(255, 102, 0));
         gbc.gridx = 0;
         gbc.gridy = 1;
         painelCentral.add(lblArea, gbc);
 
         comboArea = new JComboBox<>();
-        comboArea.setPreferredSize(new Dimension(200, 30));
+        comboArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboArea.setPreferredSize(new Dimension(300, 35));
         gbc.gridx = 1;
         painelCentral.add(comboArea, gbc);
 
         // Poltrona
         JLabel lblPoltrona = new JLabel("Selecione a Poltrona:");
-        lblPoltrona.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblPoltrona.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblPoltrona.setForeground(new Color(255, 102, 0));
         gbc.gridx = 0;
         gbc.gridy = 2;
         painelCentral.add(lblPoltrona, gbc);
 
         comboPoltrona = new JComboBox<>();
-        comboPoltrona.setPreferredSize(new Dimension(200, 30));
+        comboPoltrona.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboPoltrona.setPreferredSize(new Dimension(300, 35));
         gbc.gridx = 1;
         painelCentral.add(comboPoltrona, gbc);
 
         // Botão Finalizar
+        JPanel painelBotao = new JPanel();
+        painelBotao.setBackground(Color.WHITE);
+        painelBotao.setBorder(new EmptyBorder(20, 0, 30, 0));
+
         btnFinalizar = new JButton("Finalizar Compra");
         btnFinalizar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnFinalizar.setBackground(new Color(255, 140, 0));
-        btnFinalizar.setForeground(Color.BLACK);
-        btnFinalizar.setPreferredSize(new Dimension(180, 40));
-        JPanel painelBotao = new JPanel();
-        painelBotao.setBorder(new EmptyBorder(10, 0, 20, 0));
+        btnFinalizar.setBackground(new Color(255, 102, 0));
+        btnFinalizar.setForeground(Color.WHITE);
+        btnFinalizar.setPreferredSize(new Dimension(250, 45));
+        btnFinalizar.setFocusPainted(false);
         painelBotao.add(btnFinalizar);
         add(painelBotao, BorderLayout.SOUTH);
 

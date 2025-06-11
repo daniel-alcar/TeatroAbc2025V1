@@ -98,7 +98,7 @@ public class TelaPrincipal extends JFrame {
     getContentPane().add(panelMenu, BorderLayout.WEST);
     getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-    setSize(new Dimension(1350, 789));
+    setExtendedState(JFrame.MAXIMIZED_BOTH);
     setLocationRelativeTo(null);
 }
 
