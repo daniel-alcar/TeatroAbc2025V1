@@ -50,12 +50,7 @@ public class Espetaculos extends JFrame {
             }
         };
 
-        // Carregar imagem de fundo
-        URL bgUrl = getClass().getResource("/Icons/backgroudlogin.jpg");
-        if (bgUrl != null) {
-            backgroundImage = new ImageIcon(bgUrl).getImage();
-        }
-
+        
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 50));
         buttonPanel.setOpaque(false);
 
@@ -82,7 +77,8 @@ public class Espetaculos extends JFrame {
         button.setForeground(Color.WHITE);
         button.setBackground(new Color(255, 102, 0));
         button.setBorder(null);
-        button.setPreferredSize(new Dimension(300, 400));
+        int buttonWidth = (MIN_WIDTH - 100) / 3;
+        button.setPreferredSize(new Dimension(buttonWidth, 400));
         button.setVerticalTextPosition(JButton.BOTTOM);
         button.setHorizontalTextPosition(JButton.CENTER);
         button.setIconTextGap(20);
@@ -91,7 +87,9 @@ public class Espetaculos extends JFrame {
             URL iconUrl = getClass().getResource(iconPath);
             if (iconUrl != null) {
                 ImageIcon originalIcon = new ImageIcon(iconUrl);
-                Image scaledImage = originalIcon.getImage().getScaledInstance(250, 300, Image.SCALE_SMOOTH);
+                int imageWidth = buttonWidth - 50;
+                int imageHeight = 300;
+                Image scaledImage = originalIcon.getImage().getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
                 button.setIcon(new ImageIcon(scaledImage));
             }
         } catch (Exception e) {
