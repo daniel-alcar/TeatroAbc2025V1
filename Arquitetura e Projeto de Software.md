@@ -46,14 +46,14 @@ O sistema de venda de ingressos do Teatro ABC é uma **aplicação desktop desen
 
 ## 📦 Estrutura de Pacotes
 
+```plaintext
 com.example
-├── Main.java
-├── model/ # Camada de Modelo
-├── dao/ # Camada de Acesso a Dados
-├── gui/ # Camada de Apresentação
-├── service/ # Camada de Serviço
-└── util/ # Utilitários
-
+├── Main.java               # Classe principal
+├── model/                 # Camada de Modelo (entidades e regras de negócio)
+├── dao/                   # Camada de Acesso a Dados (persistência)
+├── gui/                   # Camada de Apresentação (interface com o usuário)
+├── service/               # Camada de Serviço (lógica de negócios)
+└── util/                  # Utilitários (funções auxiliares e suporte)
 
 ### 📂 Camada de Modelo (`model/`)
 - **Responsabilidade:** Representar entidades e regras de negócio.
