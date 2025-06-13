@@ -1,17 +1,15 @@
 package com.example.model;
 
-public class Peca { // Classe para definir características da Peça
+public class Peca { 
 
     private int id;
     private String tituloPeca;
 
-    // Construtor com ID
     public Peca(int id, String tituloPeca) {
         this.id = id;
         this.tituloPeca = tituloPeca;
     }
 
-    // Construtor sem ID (útil em formulários ou criação inicial)
     public Peca(String tituloPeca) {
         this.tituloPeca = tituloPeca;
     }

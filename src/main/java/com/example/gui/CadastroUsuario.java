@@ -9,14 +9,12 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.net.URL;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -67,12 +65,6 @@ public class CadastroUsuario extends JFrame {
             }
         };
 
-        // Carregar imagem de fundo
-        URL bgUrl = getClass().getResource("/Icons/backgroudlogin.jpg");
-        if (bgUrl != null) {
-            backgroundImage = new ImageIcon(bgUrl).getImage();
-        }
-
         JPanel formPanel = new JPanel(new GridLayout(10, 2, 20, 20));
         formPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
         formPanel.setOpaque(false);
@@ -85,10 +77,9 @@ public class CadastroUsuario extends JFrame {
             ex.printStackTrace();
         }
 
-        // Configuração dos campos
         Font labelFont = new Font("Segoe UI", Font.BOLD, 14);
         Font fieldFont = new Font("Segoe UI", Font.PLAIN, 14);
-        Color labelColor = new Color(255, 102, 0); // Cor laranja do sistema
+        Color labelColor = new Color(255, 102, 0); 
 
         txtNome = createStyledTextField(fieldFont);
         txtLogradouro = createStyledTextField(fieldFont);
@@ -113,7 +104,6 @@ public class CadastroUsuario extends JFrame {
         chkFidelidade.setFont(fieldFont);
         chkFidelidade.setForeground(labelColor);
 
-        // Adicionando labels e campos com estilo
         addFormField(formPanel, "Nome:", txtNome, labelFont, labelColor);
         addFormField(formPanel, "CPF:", txtCpf, labelFont, labelColor);
         addFormField(formPanel, "Data de Nascimento (dd/MM/yyyy):", txtDataNascimento, labelFont, labelColor);
@@ -180,19 +170,16 @@ public class CadastroUsuario extends JFrame {
         String cidade = txtCidade.getText().trim();
         String uf = txtUf.getText().trim().toUpperCase();
 
-        // Validação simples
         if (nome.isEmpty() || cpf.isEmpty() || dataNascimentoStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha os campos Nome, CPF e Data de Nascimento.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Validação do UF
         if (uf.length() != 2) {
             JOptionPane.showMessageDialog(this, "O campo UF deve conter exatamente 2 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Converte a data de nascimento String (dd/MM/yyyy) para LocalDate
         LocalDate dataNascimento;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         try {

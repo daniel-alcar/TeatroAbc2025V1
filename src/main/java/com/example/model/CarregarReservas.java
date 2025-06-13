@@ -15,9 +15,8 @@ public class CarregarReservas {
             String linha;
 
             while ((linha = br.readLine()) != null) {
-                // Supondo formato: sessao|area|poltrona|cpf
                 String[] partes = linha.split("\\|");
-                if (partes.length != 4) continue; // linha inválida
+                if (partes.length != 4) continue; 
 
                 String sessao = partes[0];
                 String area = partes[1];

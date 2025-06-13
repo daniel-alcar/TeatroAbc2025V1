@@ -27,7 +27,6 @@ public class Usuario {
         this.uf = uf;
     }
 
-    // Getters e setters
 
     public String getNome() {
         return nome;

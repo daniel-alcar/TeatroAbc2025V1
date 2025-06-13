@@ -54,7 +54,6 @@ public class Espetaculos extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 50));
         buttonPanel.setOpaque(false);
 
-        // Configuração dos botões
         btnPatrulha = createStyledButton("Patrulha Canina", "/Icons/ESPETACULO_PATRULHA.png");
         btnAlladin = createStyledButton("Alladin", "/Icons/Alladin.png");
         btnCisne = createStyledButton("Cisne Negro", "/Icons/cisne.png");

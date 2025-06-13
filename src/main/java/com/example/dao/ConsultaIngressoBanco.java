@@ -1,4 +1,3 @@
-// DAO: ConsultaIngressoBanco.java
 package com.example.dao;
 
 import java.sql.Connection;

@@ -48,12 +48,10 @@ public class ImpressaoIngresso extends JFrame implements Printable {
         
         add(painelCabecalho, BorderLayout.NORTH);
 
-        // Painel principal
         JPanel painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
         painelPrincipal.setBackground(Color.WHITE);
 
-        // Área de visualização do ingresso
         areaImpressao = new JTextArea(dadosIngresso);
         areaImpressao.setEditable(false);
         areaImpressao.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -69,7 +67,6 @@ public class ImpressaoIngresso extends JFrame implements Printable {
 
         painelPrincipal.add(areaImpressao, BorderLayout.CENTER);
 
-        // Painel de botões
         JPanel painelBotoes = new JPanel(new GridBagLayout());
         painelBotoes.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();

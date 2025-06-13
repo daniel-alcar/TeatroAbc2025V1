@@ -10,7 +10,6 @@ public class Sessao {
     private Peca peca;
     private List<Area> areas;
 
-    // Construtor com ID
     public Sessao(int id, String periodo, Peca peca, List<Area> areas) {
         this.id = id;
         this.periodo = periodo;
@@ -18,12 +17,10 @@ public class Sessao {
         this.areas = areas;
     }
 
-    // Construtor sem ID
     public Sessao(String periodo, Peca peca, List<Area> areas) {
         this(0, periodo, peca, areas); // ID = 0 por padrão
     }
 
-    // Getters
     public int getId() {
         return id;
     }
@@ -40,7 +37,6 @@ public class Sessao {
         return areas;
     }
 
-    // Retorna total de poltronas reservadas
     public int coletaQtdPoltronasReservadas() {
         int totalReservadas = 0;
         for (Area area : areas) {
@@ -53,7 +49,6 @@ public class Sessao {
         return totalReservadas;
     }
 
-    // Reserva uma poltrona em uma área específica
     public boolean reservarPoltrona(String nomeArea, int numeroPoltrona) {
         for (Area area : areas) {
             if (area.getTitulo().equalsIgnoreCase(nomeArea)) {
@@ -63,7 +58,6 @@ public class Sessao {
         return false;
     }
 
-    // Verifica se uma poltrona está disponível
     public boolean verificarDisponibilidade(String nomeArea, int numeroPoltrona) {
         for (Area area : areas) {
             if (area.getTitulo().equalsIgnoreCase(nomeArea)) {

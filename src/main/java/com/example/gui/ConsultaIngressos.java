@@ -46,7 +46,6 @@ public class ConsultaIngressos extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Cabeçalho com o mesmo estilo da tela principal
         JPanel painelCabecalho = new JPanel();
         painelCabecalho.setBackground(new Color(255, 102, 0));
         painelCabecalho.setBorder(new EmptyBorder(15, 20, 15, 20));
@@ -58,12 +57,10 @@ public class ConsultaIngressos extends JFrame {
         
         add(painelCabecalho, BorderLayout.NORTH);
 
-        // Painel principal com layout organizado
         JPanel painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
         painelPrincipal.setBackground(Color.WHITE);
 
-        // Painel de entrada de dados
         JPanel painelBusca = new JPanel(new GridBagLayout());
         painelBusca.setBackground(Color.WHITE);
         painelBusca.setBorder(BorderFactory.createTitledBorder(
@@ -103,7 +100,6 @@ public class ConsultaIngressos extends JFrame {
 
         painelPrincipal.add(painelBusca, BorderLayout.NORTH);
 
-        // Painel de resultados com scroll
         painelResultados = new JPanel();
         painelResultados.setLayout(new GridBagLayout());
         painelResultados.setBackground(Color.WHITE);
@@ -117,7 +113,6 @@ public class ConsultaIngressos extends JFrame {
             new Font("Segoe UI", Font.BOLD, 14),
             new Color(70, 70, 70)));
         
-        // Otimizações do scroll
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         scroll.getHorizontalScrollBar().setUnitIncrement(16);
         scroll.setWheelScrollingEnabled(true);
@@ -129,7 +124,6 @@ public class ConsultaIngressos extends JFrame {
 
         add(painelPrincipal, BorderLayout.CENTER);
 
-        // Configuração do botão buscar
         btnBuscar.addActionListener(e -> buscarReservas());
     }
 
@@ -148,14 +142,13 @@ public class ConsultaIngressos extends JFrame {
             ConsultaIngressoBanco dao = new ConsultaIngressoBanco(conn);
             List<String> resultados = dao.buscarIngressoCPF(cpfBusca);
 
-            // Limpar o painel de resultados
             painelResultados.removeAll();
             painelResultados.setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridwidth = GridBagConstraints.REMAINDER;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.insets = new Insets(10, 10, 10, 10);
-            gbc.weightx = 1.0; // Permite que os componentes se expandam horizontalmente
+            gbc.weightx = 1.0;
 
             if (resultados.isEmpty()) {
                 JLabel lblNenhum = new JLabel("Nenhum ingresso encontrado para o CPF: " + formatarCPF(cpfBusca));
@@ -199,7 +192,6 @@ public class ConsultaIngressos extends JFrame {
                 }
             }
 
-            // Otimização da atualização do painel
             painelResultados.revalidate();
             painelResultados.repaint();
             scroll.getViewport().setViewPosition(new java.awt.Point(0, 0)); // Volta ao topo

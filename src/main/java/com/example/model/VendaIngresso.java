@@ -10,7 +10,6 @@ public class VendaIngresso {
     private Sessao sessao;
 
     public VendaIngresso() {
-        // Construtor vazio necessário para frameworks e DAOs
     }
 
     public VendaIngresso(Usuario usuario, Area area, int poltrona, Peca peca, Sessao sessao) {
@@ -21,7 +20,6 @@ public class VendaIngresso {
         this.sessao = sessao;
     }
 
-    // Getters e Setters
     public int getIdIngresso() {
         return idIngresso;
     }
